@@ -3,45 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AQUA SCAN PRO - Ebro & Aragón Precision</title>
+    <title>AQUA SCAN PRO - Sonar Matrix v7.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
         body {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: #050811;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            background-color: #030712;
         }
         #map {
-            height: 380px;
-            border-radius: 12px;
+            height: 400px;
+            border-radius: 14px;
             z-index: 10;
         }
         .leaflet-container {
-            background: #090f1d !important;
+            background: #090d16 !important;
         }
-        .fish-card img {
-            object-fit: cover;
-            border-radius: 8px;
-        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0b1329; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
     </style>
 </head>
-<body class="text-slate-100 min-h-screen pb-12">
+<body class="text-slate-200 min-h-screen pb-16 antialiased">
 
-    <header class="bg-slate-900 border-b border-slate-800 py-5 px-4 shadow-xl">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-            <div class="text-center md:text-left">
-                <div class="flex items-center justify-center md:justify-start gap-2 mb-1">
-                    <span class="bg-amber-500/10 text-amber-400 px-2 py-0.5 rounded text-[10px] font-bold border border-amber-500/20">EDICIÓN CUENCA DEL EBRO 2026</span>
-                    <span class="text-xs font-semibold tracking-wider text-slate-400 uppercase">Monitoreo Hidrográfico de Precisión</span>
+    <header class="bg-slate-950 border-b border-slate-800/80 py-4 px-6 shadow-2xl sticky top-0 z-50 backdrop-blur-md bg-opacity-95">
+        <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-4">
+            <div>
+                <div class="flex items-center justify-center lg:justify-start gap-2 mb-0.5">
+                    <span class="bg-sky-500/10 text-sky-400 px-2 py-0.5 rounded text-[9px] font-bold tracking-widest border border-sky-500/20 uppercase">Sonar Depth Matrix v7.0</span>
+                    <div class="w-2 h-2 rounded-full bg-cyan-500 animate-pulse"></div>
+                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Escáner de Capas Hidrostáticas</span>
                 </div>
-                <h1 class="text-2xl md:text-3xl font-black text-white tracking-tight">AQUA SCAN PRO</h1>
-                <p class="text-slate-400 text-xs">Calibración específica para Río Ebro Zaragoza, Embalse de Mezalocha y Embalse de Tosos</p>
+                <h1 class="text-2xl font-black text-white tracking-wider flex items-center gap-2">
+                    AQUA SCAN PRO <span class="text-xs font-normal text-slate-500">| COLUMNA DE AGUA</span>
+                </h1>
             </div>
             
-            <div class="bg-slate-950 border border-slate-800 px-4 py-2 rounded-xl text-center md:text-right">
-                <span class="text-[10px] text-slate-500 uppercase font-bold block">Entorno & Punto Escaneado</span>
-                <span id="txt-entorno-detectado" class="text-xs font-black text-blue-400 uppercase tracking-wider">DETECTANDO ENTORNO...</span>
+            <div class="flex flex-wrap items-center justify-center gap-3">
+                <div class="bg-slate-900/90 border border-slate-800 px-3 py-1.5 rounded-lg text-center min-w-[130px]">
+                    <span class="text-[9px] text-slate-500 uppercase font-bold block">COORDENADAS</span>
+                    <span id="txt-geo-coor" class="text-xs font-bold text-slate-300 font-mono">--</span>
+                </div>
+                <div class="bg-slate-900/90 border border-slate-800 px-3 py-1.5 rounded-lg text-center min-w-[150px]">
+                    <span class="text-[9px] text-slate-500 uppercase font-bold block">MASA CLASIFICADA</span>
+                    <span id="txt-entorno-detectado" class="text-xs font-black text-sky-400 uppercase tracking-wide">--</span>
+                </div>
+                <div class="bg-slate-900/90 border border-slate-800 px-3 py-1.5 rounded-lg text-center min-w-[150px]">
+                    <span class="text-[9px] text-slate-500 uppercase font-bold block">ECOSISTEMA FIJADO</span>
+                    <span id="txt-geo-nombre" class="text-xs font-bold text-amber-400 truncate block max-w-[140px]">--</span>
+                </div>
             </div>
         </div>
     </header>
@@ -50,390 +61,111 @@
         
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
             
-            <div class="lg:col-span-2 bg-slate-900 border border-slate-800 p-4 rounded-xl shadow-lg flex flex-col justify-between">
+            <div class="lg:col-span-2 bg-slate-900/40 border border-slate-800/80 p-4 rounded-2xl shadow-xl flex flex-col justify-between backdrop-blur-sm">
                 <div>
-                    <h2 class="text-sm font-bold text-white uppercase tracking-wide mb-2 flex justify-between">
-                        <span>🗺️ MAPA DE SELECCIÓN TÁCTICA</span>
-                        <span id="txt-geo-nombre" class="text-xs text-amber-400 font-mono">Cargando...</span>
-                    </h2>
-                    <div id="map" class="border border-slate-850"></div>
+                    <div class="flex items-center justify-between mb-3">
+                        <h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                            <span>🛰️ Mapeo Geográfico de Precisión</span>
+                        </h2>
+                        <span id="txt-geo-nombre-mini" class="text-[10px] text-amber-400 font-mono">--</span>
+                    </div>
+                    <div id="map" class="border border-slate-800 shadow-inner"></div>
                 </div>
                 
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-3">
-                    <button onclick="cargarPuntoEspecifico(41.6575, -0.8762, 'Río Ebro (Zaragoza)', 'Río')" class="bg-slate-950 border border-slate-800 hover:border-blue-500 text-[11px] font-bold p-2 rounded text-left flex items-center justify-between">
-                        <span>🌊 Río Ebro (Zaragoza)</span> <span class="text-[9px] bg-blue-500/10 text-blue-400 px-1 rounded">RÍO</span>
-                    </button>
-                    <button onclick="cargarPuntoEspecifico(41.4312, -0.9168, 'Embalse de Mezalocha', 'Pantano')" class="bg-slate-950 border border-slate-800 hover:border-teal-500 text-[11px] font-bold p-2 rounded text-left flex items-center justify-between">
-                        <span>🏔️ Pantano Mezalocha</span> <span class="text-[9px] bg-teal-500/10 text-teal-400 px-1 rounded">PANTANO</span>
-                    </button>
-                    <button onclick="cargarPuntoEspecifico(41.3341, -1.0253, 'Embalse de Tosos', 'Pantano')" class="bg-slate-950 border border-slate-800 hover:border-teal-500 text-[11px] font-bold p-2 rounded text-left flex items-center justify-between">
-                        <span>🏔️ Pantano de Tosos</span> <span class="text-[9px] bg-teal-500/10 text-teal-400 px-1 rounded">PANTANO</span>
-                    </button>
+                <div class="mt-4">
+                    <span class="text-[9px] text-slate-500 font-bold block uppercase mb-2 tracking-wider">Estaciones de Monitoreo Predeterminadas:</span>
+                    <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                        <button onclick="cargarPuntoCalibrado(41.6575, -0.8762, 'Río Ebro (Zaragoza)', 'Río')" class="bg-slate-950 border border-slate-800 hover:border-sky-500 text-[10px] font-bold p-2 rounded-lg text-slate-400 transition-colors">Zaragoza (Río)</button>
+                        <button onclick="cargarPuntoCalibrado(41.3045, -0.0392, 'Caspe (Mar de Aragón)', 'Pantano')" class="bg-slate-950 border border-slate-800 hover:border-sky-500 text-[10px] font-bold p-2 rounded-lg text-slate-400 transition-colors">Caspe (Mar)</button>
+                        <button onclick="cargarPuntoCalibrado(41.3702, -0.3015, 'Embalse Mequinenza', 'Pantano')" class="bg-slate-950 border border-slate-800 hover:border-sky-500 text-[10px] font-bold p-2 rounded-lg text-slate-400 transition-colors">Mequinenza</button>
+                        <button onclick="cargarPuntoCalibrado(41.4312, -0.9168, 'Embalse Mezalocha', 'Pantano')" class="bg-slate-950 border border-slate-800 hover:border-sky-500 text-[10px] font-bold p-2 rounded-lg text-slate-400 transition-colors">Mezalocha</button>
+                        <button onclick="cargarPuntoCalibrado(41.3341, -1.0253, 'Embalse de Tosos', 'Pantano')" class="bg-slate-950 border border-slate-800 hover:border-sky-500 text-[10px] font-bold p-2 rounded-lg text-slate-400 transition-colors">Tosos</button>
+                    </div>
                 </div>
             </div>
 
-            <div class="space-y-4">
-                <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-lg">
-                    <span class="text-[10px] text-slate-400 uppercase font-bold block mb-1">Previsión para Hoy</span>
-                    <div class="flex items-center gap-3">
-                        <span id="txt-icon" class="text-3xl">☀️</span>
+            <div class="space-y-4 flex flex-col justify-between">
+                <div class="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-4 shadow-lg flex-1">
+                    <span class="text-[9px] text-slate-500 uppercase font-black tracking-wider block mb-2">Sensor de Presión</span>
+                    <div class="flex items-center justify-between">
                         <div>
-                            <span id="txt-temp" class="text-2xl font-black text-white">--°C</span>
-                            <span id="txt-clima" class="text-xs text-slate-400 block">--</span>
+                            <span id="txt-temp" class="text-3xl font-black text-white tracking-tighter">--°C</span>
+                            <span id="txt-clima" class="text-xs text-slate-400 block mt-0.5">--</span>
+                        </div>
+                        <span id="txt-icon" class="text-4xl">☀️</span>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-800 flex justify-between items-center">
+                        <div>
+                            <span class="text-[9px] text-slate-500 uppercase block">Presión Atmosférica</span>
+                            <span id="txt-presion" class="text-lg font-bold text-white">-- hPa</span>
+                        </div>
+                        <span id="txt-tendencia" class="text-[10px] font-mono px-2 py-0.5 rounded border">--</span>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-4 shadow-lg flex-1">
+                    <span class="text-[9px] text-slate-500 uppercase font-black tracking-wider block mb-1">Turbidez e Hidrodinámica</span>
+                    <div class="grid grid-cols-2 gap-2 mt-2">
+                        <div class="bg-slate-950/60 p-2 rounded-lg border border-slate-850">
+                            <span class="text-[9px] text-slate-500 block">VIENTO LOCAL</span>
+                            <span id="txt-viento" class="text-sm font-bold text-white">-- km/h</span>
+                        </div>
+                        <div class="bg-slate-950/60 p-2 rounded-lg border border-slate-850">
+                            <span class="text-[9px] text-slate-500 block">TRANSPARENCIA</span>
+                            <span id="txt-turbidez" class="text-sm font-bold text-cyan-400">--</span>
                         </div>
                     </div>
-                    <div class="mt-3 pt-3 border-t border-slate-850 flex justify-between items-center">
-                        <div><span class="text-[9px] text-slate-500 block uppercase">Barómetro</span><span id="txt-presion" class="text-base font-extrabold text-white">-- hPa</span></div>
-                        <span id="txt-tendencia" class="text-xs font-bold text-emerald-400 bg-emerald-500/5 px-2 py-0.5 rounded">--</span>
-                    </div>
                 </div>
 
-                <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-lg">
-                    <span class="text-[10px] text-slate-400 uppercase font-bold block mb-1">Cierzo / Viento local</span>
-                    <span id="txt-viento" class="text-lg font-black text-white">-- km/h</span>
-                    <p id="txt-viento-desc" class="text-[11px] text-slate-400 mt-0.5">--</p>
-                </div>
-
-                <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-lg">
-                    <span class="text-[10px] text-amber-400 uppercase font-bold block mb-1">Actividad Solunar</span>
-                    <div class="flex items-center gap-2 mb-1">
-                        <span id="txt-luna-emoji" class="text-lg">🌑</span>
-                        <span id="txt-luna-nombre" class="text-xs font-bold text-white">--</span>
+                <div class="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-4 shadow-lg flex-1">
+                    <span class="text-[9px] text-amber-500/70 uppercase font-black tracking-wider block mb-2">Fase Solunar</span>
+                    <div class="flex items-center gap-3 bg-slate-950/50 p-2 rounded-xl border border-slate-850 mb-1">
+                        <span id="txt-luna-emoji" class="text-xl">🌑</span>
+                        <span id="txt-luna-nombre" class="text-xs text-slate-300 font-bold">--</span>
                     </div>
-                    <span id="txt-solunar-horas" class="text-[11px] text-slate-400 block">--</span>
+                    <span id="txt-solunar-horas" class="text-[11px] font-mono text-slate-400 block">--</span>
                 </div>
             </div>
-
         </div>
 
-        <h2 class="text-lg font-bold mb-3 text-white flex items-center gap-2">
-            <span class="w-1 h-4 bg-blue-500 rounded"></span> Biomasa Detectada en esta Ubicación:
+        <h2 class="text-xs font-bold mb-4 text-slate-400 uppercase tracking-widest flex items-center gap-2">
+            <span class="w-1.5 h-3 bg-sky-500 rounded-full"></span> Matriz de Biomasa Territorial
         </h2>
         
-        <div id="grid-especies" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
+        <div id="grid-especies" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3 mb-8">
             </div>
 
-        <div id="reporte-contenedor" class="bg-slate-900 border border-slate-800 rounded-xl p-6 hidden shadow-2xl">
+        <div id="reporte-contenedor" class="bg-slate-900/50 border border-slate-800 rounded-2xl p-6 hidden shadow-2xl backdrop-blur">
             
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-800 pb-4 mb-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-800 pb-4 mb-6">
                 <div>
-                    <h3 id="rep-especie-titulo" class="text-xl font-black text-white">--</h3>
-                    <p id="rep-subtitulo" class="text-xs text-slate-400 italic">--</p>
+                    <h3 id="rep-especie-titulo" class="text-lg font-black text-white uppercase tracking-wider">--</h3>
+                    <p id="rep-subtitulo" class="text-xs text-slate-500 italic">--</p>
                 </div>
-                <div class="bg-slate-950 px-3 py-1.5 rounded-lg border border-slate-850 text-right">
-                    <span class="text-[9px] text-slate-500 uppercase font-bold block">Previsión Picada</span>
-                    <span id="rep-actividad-texto" class="text-xs font-bold text-white">--</span>
+                <div class="bg-slate-950 px-3 py-2 rounded-xl border border-slate-850 text-right mt-2 sm:mt-0">
+                    <span class="text-[9px] text-slate-500 uppercase font-bold block">PROBABILIDAD PICADA</span>
+                    <span id="rep-actividad-texto" class="text-xs font-mono font-bold">--</span>
                 </div>
             </div>
 
-            <div class="bg-blue-500/5 border border-blue-500/20 p-4 rounded-xl mb-6">
-                <span class="text-xs font-bold text-blue-400 block uppercase tracking-wider mb-1">📍 Localización Clave Detectada Hoy</span>
-                <p id="rep-zona-foco" class="text-xs text-slate-200 leading-relaxed">--</p>
-            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                
+                <div class="lg:col-span-2 space-y-4">
+                    <div class="bg-slate-950/40 border border-slate-850 p-4 rounded-xl">
+                        <span class="text-[10px] font-bold text-sky-400 block uppercase tracking-widest mb-1">🎯 Comportamiento Biológico Sumado</span>
+                        <p id="rep-zona-foco" class="text-xs text-slate-300 leading-relaxed font-sans">--</p>
+                    </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="bg-slate-950 p-4 rounded-xl border border-slate-850">
-                    <span class="text-xs font-bold text-amber-400 block mb-1">⚙️ Aparejo Técnico y Estrategia</span>
-                    <h4 id="rep-lure-nombre" class="text-xs font-bold text-white mb-1">--</h4>
-                    <p id="rep-lure-desc" class="text-xs text-slate-400 leading-relaxed">--</p>
-                    <p id="rep-lure-alt" class="text-[11px] text-amber-400 font-medium mt-2 pt-2 border-t border-slate-900">--</p>
-                </div>
-
-                <div class="bg-slate-950 p-4 rounded-xl border border-slate-850">
-                    <span class="text-xs font-bold text-purple-400 block mb-2">🧵 Líneas, Cañas y Bajos</span>
-                    <div class="grid grid-cols-2 gap-3 text-[11px]">
-                        <div><span class="text-slate-500 block">Caña Ideal:</span><span id="rep-tech-cana" class="text-slate-200 font-medium">--</span></div>
-                        <div><span class="text-slate-500 block">Carrete:</span><span id="rep-tech-carrete" class="text-slate-200 font-medium">--</span></div>
-                        <div><span class="text-slate-500 block">Línea Madre:</span><span id="rep-tech-linea" class="text-slate-200 font-medium">--</span></div>
-                        <div><span class="text-slate-500 block">Bajo de Línea:</span><span id="rep-tech-bajo" class="text-slate-200 font-medium">--</span></div>
+                    <div class="bg-slate-950/80 p-4 rounded-xl border border-slate-850 flex flex-col justify-between">
+                        <div>
+                            <span class="text-[10px] font-bold text-amber-500 uppercase tracking-wider block mb-2">🛠️ Línea de Aparejo Recomendada</span>
+                            <h4 id="rep-lure-nombre" class="text-xs font-bold text-white mb-1">--</h4>
+                            <p id="rep-lure-desc" class="text-xs text-slate-400 leading-relaxed">--</p>
+                        </div>
+                        <p id="rep-lure-alt" class="text-[11px] text-amber-400/80 mt-3 pt-3 border-t border-slate-900 italic">--</p>
                     </div>
                 </div>
-            </div>
 
-        </div>
-
-    </main>
-
-    <script>
-        let mapa;
-        let marcador;
-        let presionActual = 1013;
-        let entornoDetectado = "Río"; 
-        let ubicacionNombre = "Río Ebro (Zaragoza)";
-        let especieSeleccionada = "";
-
-        // BASE DE DATOS TOTAL CON FOTOS DE PECES INCLUIDAS EN LAS TARJETAS
-        const DATA_PESCA = {
-            bass: {
-                nombre: "Black Bass",
-                cientifico: "Micropterus salmoides",
-                foto: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=150&auto=format&fit=crop&q=60", // Foto real bass
-                colorClass: "border-sky-500",
-                habitats: ["Mezalocha", "Tosos"], // Presente en pantanos aragoneses, raro en el cauce de Zgz
-                cana: "6'8\" a 7'2\" Medium Heavy",
-                carrete: "Baitcasting de alta velocidad (7.1:1)",
-                linea: "Trenzado 30 lbs",
-                bajo: "Fluorocarbono 0.35mm",
-                lureNombre: "Montaje Texas con Cangrejo de Vinilo",
-                lureDesc: "Imprescindible para Mezalocha y Tosos entre las piedras sumergidas. Plomo de bala pasante libre para salvar enganches.",
-                lureAlt: "Alternativa: Spinnerbait si el viento bate las orillas de Mezalocha.",
-                focoRio: "No común en este tramo urbano duro del Ebro.",
-                focoPantano: "Muévete por las reculadas rocosas resguardadas del viento, buscando las réculas limpias de fango."
-            },
-            siluro: {
-                nombre: "Siluro",
-                cientifico: "Silurus glanis",
-                foto: "https://images.unsplash.com/photo-1582967788606-a171c1080cb0?w=150&auto=format&fit=crop&q=60", // Foto siluro
-                colorClass: "border-red-500",
-                habitats: ["Zaragoza"], // El rey del Ebro en Zaragoza
-                cana: "8'6\" a 9'0\" Extra Heavy Potente",
-                carrete: "Spinning Reforzado tamaño 6000/8000",
-                linea: "Trenzado robusto 0.45mm (75 lbs)",
-                bajo: "Monofilamento técnico de 1.0mm",
-                lureNombre: "Shads de Vinilo Pesados de 15-20cm",
-                lureDesc: "Moverlos rascando las profundidades de las pozas del Ebro en zonas como los puentes principales.",
-                lureAlt: "Alternativa: Grandes cucharillas ondulantes metálicas pesadas.",
-                focoRio: "Explora las grandes pozas de corriente detrás de los pilares de los puentes de Zaragoza y zonas de remolinos profundos.",
-                focoPantano: "No catalogado con densidad crítica en estos dos embalses pequeños."
-            },
-            lucioperca: {
-                nombre: "Lucioperca",
-                cientifico: "Sander lucioperca",
-                foto: "https://images.unsplash.com/photo-1504618223053-559bdef9dd5a?w=150&auto=format&fit=crop&q=60", // Foto lucioperca
-                colorClass: "border-emerald-500",
-                habitats: ["Zaragoza", "Mezalocha", "Tosos"], // En todos
-                cana: "7'4\" de acción Extra-Fast para notar picadas finas",
-                carrete: "Spinning de precisión tamaño 2500",
-                linea: "Trenzado PE de 0.12mm",
-                bajo: "Fluorocarbono 100% invisible de 0.26mm",
-                lureNombre: "Paddle Tail Shad sobre cabeza de plomo ligera",
-                lureDesc: "La clave en el Ebro es dar pequeños saltos pegados al suelo rocoso controlando el hilo en la caída.",
-                lureAlt: "Alternativa: Pequeños peces artificiales (minnows) de hundimiento en los crepúsculos.",
-                focoRio: "Bajo las corrientes limpias que baten los muros de piedra o pilares en Zaragoza.",
-                focoPantano: "Camas de arcilla o grava limpia entre 6 y 10 metros de profundidad en Mezalocha y Tosos."
-            },
-            carpa: {
-                nombre: "Carpa Común",
-                cientifico: "Cyprinus carpio",
-                foto: "https://images.unsplash.com/photo-1524704654690-b56c05c78a02?w=150&auto=format&fit=crop&q=60", // Foto carpa
-                colorClass: "border-amber-500",
-                habitats: ["Zaragoza", "Mezalocha", "Tosos"], // En todos
-                cana: "12ft Carpfishing con 3.25 lbs de acción",
-                carrete: "Grandes bobinas con sistema libre Baitrunner",
-                linea: "Monofilamento anti-roce de 0.35mm",
-                bajo: "Trenzado flexible montado en Hair Rig",
-                lureNombre: "Montaje Hair Rig con Boilie de Krill o Maíz dulce",
-                lureDesc: "Perfecto para las orillas mansas de Mezalocha o las tablas tranquilas del Ebro.",
-                lureAlt: "Alternativa: Chufa o maíz artificial flotante sobre fango.",
-                focoRio: "Tablas lentas de agua mansa, recodos fuera de la corriente fuerte y zonas de juncos.",
-                focoPantano: "Playas de pendiente suave arenosas y cañaverales ribereños en Tosos o Mezalocha."
-            },
-            lucio: {
-                nombre: "Lucio",
-                cientifico: "Esox lucius",
-                foto: "https://images.unsplash.com/photo-1625121210214-e22f254b1790?w=150&auto=format&fit=crop&q=60", // Foto lucio
-                colorClass: "border-teal-600",
-                habitats: ["Mezalocha", "Tosos"], // Clásico de estos dos pantanos
-                cana: "7'2\" Heavy especial de Spinning/Baitcasting",
-                carrete: "Tamaño 4000 fuerte o carrete de casting robusto",
-                linea: "Trenzado de 40 lbs",
-                bajo: "Bajo de acero trenzado o fluorocarbono grueso de 0.80mm (anti-cortes)",
-                lureNombre: "Spinnerbaits grandes o Jerkbaits duros de 12-15cm",
-                lureDesc: "Recogida lineal con paradas bruscas. El lucio ataca por puro instinto territorial al ver pasar el estímulo.",
-                lureAlt: "Alternativa: Vinilos de cola de hoz pesados.",
-                focoRio: "Poco frecuente en el cauce urbano rápido de Zaragoza.",
-                focoPantano: "Bordes de estructuras, piedras grandes caídas en Mezalocha y zonas profundas cerca de la presa de Tosos."
-            },
-            alburno: {
-                nombre: "Alburno (Pez Pasto)",
-                cientifico: "Alburnus alburnus",
-                foto: "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=150&auto=format&fit=crop&q=60", // Genérica pez pasto
-                colorClass: "border-slate-400",
-                habitats: ["Zaragoza", "Mezalocha", "Tosos"], // En todas partes, comida de los grandes
-                cana: "Caña de coup muy ligera (3-4 metros) o boloñesa",
-                carrete: "No requiere o tamaño 1000 muy pequeño",
-                linea: "Monofilamento fino de 0.12mm",
-                bajo: "Anzuelo microscópico del número 18 al 22",
-                lureNombre: "Pesca con flotador ligero y Asticot (Larva)",
-                lureDesc: "Pesca en superficie o capas muy someras. Sirve como termómetro: si ves alburnos saltando, los depredadores están cerca.",
-                lureAlt: "Alternativa: Pequeño trozo de masilla de pan.",
-                focoRio: "Grandes densidades en las orillas calmadas de Zaragoza (Zona helios).",
-                focoPantano: "Nubes inmensas visibles en las réculas soleadas de Mezalocha y Tosos."
-            },
-            percasol: {
-                nombre: "Percasol",
-                cientifico: "Lepomis gibbosus",
-                foto: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=150&auto=format&fit=crop&q=60", 
-                colorClass: "border-purple-500",
-                habitats: ["Mezalocha", "Tosos"], // Típico de aguas paradas aragonesas
-                cana: "Ultra Ligera (Rockfishing / Microjigging)",
-                carrete: "Tamaño 1000 con línea fina",
-                linea: "Monofilamento de 0.16mm",
-                bajo: "Línea directa al anzuelo pequeño",
-                lureNombre: "Microvinilos de 2cm o lombriz natural al raspón",
-                lureDesc: "Especie invasora muy territorial. Ataca cualquier cosa pequeña que caiga cerca de sus nidos en las piedras.",
-                lureAlt: "Alternativa: Pequeñas cucharillas del número 0 o 1.",
-                focoRio: "Muy escaso en la corriente fuerte del Ebro central.",
-                focoPantano: "Pegado literalmente a los muros de piedra verticales y bloques de hormigón de Mezalocha y Tosos."
-            }
-        };
-
-        // INICIAR MAPA EN ZARAGOZA
-        function initMapa() {
-            mapa = L.map('map').setView([41.5000, -0.9000], 9); // Enfoque directo a la zona de Zaragoza y alrededores
-
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                attribution: '&copy; OpenStreetMap &copy; CARTO'
-            }).addTo(mapa);
-
-            marcador = L.marker([41.6575, -0.8762]).addTo(mapa);
-
-            // Click manual en cualquier otra coordenada
-            mapa.on('click', function(e) {
-                const lat = e.latlng.lat;
-                const lng = e.latlng.lng;
-                
-                // Detección automática aproximada por defecto si pinchan fuera de los botones
-                let tipo = (lat % 1 + lng % 1) > 0.5 ? "Pantano" : "Río";
-                cargarPuntoEspecifico(lat, lng, "Coordenadas GPS libres", tipo);
-            });
-        }
-
-        // CARGA Y FILTRADO EXACTO SEGÚN EL EMBALSE O EL RÍO SELECCIONADO
-        function cargarPuntoEspecifico(lat, lng, nombre, tipoAgua) {
-            marcador.setLatLng([lat, lng]);
-            entornoDetectado = tipoAgua;
-            ubicacionNombre = nombre;
-
-            // Cambiar indicador de entorno en la esquina superior derecha
-            const badge = document.getElementById('txt-entorno-detectado');
-            if(tipoAgua === "Río") {
-                badge.innerText = "🌊 RÍO FLUVIAL DETECTADO";
-                badge.className = "text-xs font-black text-blue-400 uppercase tracking-wider";
-            } else {
-                badge.innerText = "🏔️ PANTANO / EMBALSE DETECTADO";
-                badge.className = "text-xs font-black text-teal-400 uppercase tracking-wider";
-            }
-
-            document.getElementById('txt-geo-nombre').innerText = nombre;
-
-            // Algoritmo meteorológico simulado para hoy basado en la zona
-            const hash = Math.abs(Math.sin(lat) * Math.cos(lng));
-            presionActual = Math.floor(1010 + (hash * 12));
-            let temp = Math.floor(18 + (hash * 9));
-            let viento = Math.floor(8 + (hash * 26));
-
-            document.getElementById('txt-presion').innerText = `${presionActual} hPa`;
-            document.getElementById('txt-temp').innerText = `${temp}°C`;
-            document.getElementById('txt-viento').innerText = `${viento} km/h`;
-
-            let icon = "⛅"; let clima = "Nubes y Claros"; let tend = "Estable";
-            if(presionActual > 1016) { icon = "☀️"; clima = "Despejado / Cierzo Ligero"; tend = "Alta Presión"; }
-            else if (presionActual < 1011) { icon = "🌧️"; clima = "Cubierto / Inestable"; tend = "Baja Presión"; }
-
-            document.getElementById('txt-icon').innerText = icon;
-            document.getElementById('txt-clima').innerText = clima;
-            document.getElementById('txt-tendencia').innerText = tend;
-            document.getElementById('txt-viento-desc').innerText = viento > 20 ? "Cierzo moderado. Activa las orillas expuestas." : "Brisa calma en el agua.";
-
-            // Luna de hoy
-            const hoy = new Date();
-            const dia = hoy.getDate();
-            document.getElementById('txt-luna-nombre').innerText = `Fase regular (Mes de Pesca Activo)`;
-            document.getElementById('txt-solunar-horas').innerHTML = `Mejor Ventana Hoy: <b>07:${(dia%5)+10}h</b> a <b>11:45h</b>`;
-
-            // REGENERAR LA LISTA DE PECES: Solo se muestran los que habitan el sitio seleccionado
-            renderizarEspeciesSitio();
-        }
-
-        // CONTROL DE LAS TARJETAS CON FOTO DE CADA PEZ
-        function renderizarEspeciesSitio() {
-            const grid = document.getElementById('grid-especies');
-            grid.innerHTML = ""; // Vaciar anterior
-
-            // Identificar qué "ID corto" de hábitat corresponde según el nombre de la zona
-            let habitatFiltro = "Zaragoza";
-            if (ubicacionNombre.includes("Mezalocha")) habitatFiltro = "Mezalocha";
-            if (ubicacionNombre.includes("Tosos")) habitatFiltro = "Tosos";
-
-            for (const key in DATA_PESCA) {
-                const pez = DATA_PESCA[key];
-
-                // Filtramos de forma exacta para que solo salgan las especies reales de ese punto
-                if (pez.habitats.includes(habitatFiltro) || habitatFiltro === "Zaragoza" && pez.habitats.includes("Zaragoza")) {
-                    
-                    const card = document.createElement('button');
-                    card.id = `btn-${key}`;
-                    card.onclick = () => mostrarFichaEspecie(key);
-                    card.className = "fish-card p-3 rounded-xl border text-left bg-slate-900 border-slate-800 hover:border-slate-500 transition-all flex gap-3 items-center";
-                    
-                    card.innerHTML = `
-                        <img src="${pez.foto}" alt="${pez.nombre}" class="w-12 h-12 rounded-lg object-cover bg-slate-800">
-                        <div class="flex-1 min-w-0">
-                            <span class="text-xs font-black text-white block truncate">${pez.nombre}</span>
-                            <span class="text-[9px] text-slate-500 block truncate italic">${pez.cientifico}</span>
-                        </div>
-                    `;
-                    grid.appendChild(card);
-                }
-            }
-
-            // Ocultamos el reporte inferior hasta que pinchen un pez del nuevo sitio
-            document.getElementById('reporte-contenedor').classList.add('hidden');
-            especieSeleccionada = "";
-        }
-
-        // PANTALLA TÉCNICA FINAL (SIN FOTOS DE SEÑUELOS - PURA ESTRATEGIA)
-        function mostrarFichaEspecie(key) {
-            especieSeleccionada = key;
-            const pez = DATA_PESCA[key];
-
-            // Resaltar tarjeta visualmente
-            for (const k in DATA_PESCA) {
-                const btn = document.getElementById(`btn-${k}`);
-                if (btn) {
-                    if (k === key) btn.className = `fish-card p-3 rounded-xl border-2 text-left bg-slate-850 ${pez.colorClass} flex gap-3 items-center`;
-                    else btn.className = `fish-card p-3 rounded-xl border text-left bg-slate-900 border-slate-800 flex gap-3 items-center`;
-                }
-            }
-
-            // Diagnóstico de picada barométrica
-            const txtAct = document.getElementById('rep-actividad-texto');
-            if (presionActual > 1016) { txtAct.innerText = "ACTIVIDAD APÁTICA / BUSCAR EN PROFUNDIDAD"; txtAct.className = "text-xs font-bold text-amber-400"; }
-            else if (presionActual < 1011) { txtAct.innerText = "BAJA / PECES PARADOS EN FONDO"; txtAct.className = "text-xs font-bold text-rose-400"; }
-            else { txtAct.innerText = "EXCELENTE / PATRÓN DE CAZA ACTIVO"; txtAct.className = "text-xs font-bold text-emerald-400"; }
-
-            // Datos del informe
-            document.getElementById('rep-especie-titulo').innerText = pez.nombre;
-            document.getElementById('rep-subtitulo').innerText = `Ficha de comportamiento para la especie ${pez.cientifico}`;
-            
-            // Foco de ubicación inteligente según el entorno actual
-            if(entornoDetectado === "Río") {
-                document.getElementById('rep-zona-foco').innerText = `Entorno Fluvial activo: en ${ubicacionNombre}, debes buscar al ${pez.nombre} en: ${pez.focoRio}`;
-            } else {
-                document.getElementById('rep-zona-foco').innerText = `Entorno de Pantano activo: en ${ubicacionNombre}, debes buscar al ${pez.nombre} en: ${pez.focoPantano}`;
-            }
-
-            // Rellenar aparejos y líneas
-            document.getElementById('rep-lure-nombre').innerText = pez.lureNombre;
-            document.getElementById('rep-lure-desc').innerText = pez.lureDesc;
-            document.getElementById('rep-lure-alt').innerText = pez.lureAlt;
-
-            document.getElementById('rep-tech-cana').innerText = pez.cana;
-            document.getElementById('rep-tech-carrete').innerText = pez.carrete;
-            document.getElementById('rep-tech-linea').innerText = pez.linea;
-            document.getElementById('rep-tech-bajo').innerText = pez.bajo;
-
-            // Mostrar el bloque técnico e ir con scroll suave
-            document.getElementById('reporte-contenedor').classList.remove('hidden');
-            document.getElementById('reporte-contenedor').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            initMapa();
-            // Iniciar por defecto en el Río Ebro en Zaragoza
-            cargarPuntoEspecifico(41.6575, -0.8762, "Río Ebro (Zaragoza)", "Río");
-        });
-    </script>
-</body>
-</html>
+                <div class="bg-gradient-to-b from-slate-950 to-slate-900 border border-slate-800 p-4 rounded-xl flex flex-col justify-between min-h-[320px]">
+                    <div class="text-center border-b border-slate-850 pb-2">
+                        <span class="text-[10px] font-bold text-cyan-400 tracking-wider uppercase block">📟
