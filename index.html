@@ -320,4 +320,114 @@
             const dia = hoy.getDate();
             let horaMayor = ((dia * 3) % 4 + 6);
             let horaMenor = ((dia * 2) % 4 + 15);
-            document.getElementById('txt-solunar-horas').innerHTML = `Ventana Mayor: <b class="text-emerald-400">${horaMayor}:25h</b> | Menor: <b class="text-
+            document.getElementById('txt-solunar-horas').innerHTML = `Ventana Mayor: <b class="text-emerald-400">${horaMayor}:25h</b> | Menor: <b class="text-emerald-400">${horaMenor}:10h</b>`;
+
+            // FILTRAR Y COMPLEMENTAR TARJETAS DE PECES AL INSTANTE
+            filtrarEspeciesPuesto(idHabitat);
+        }
+
+        // FILTRADO DINÁMICO DE BIOMASA DE LA ZONA
+        function filtrarEspeciesPuesto(habitatId) {
+            const grid = document.getElementById('grid-especies');
+            grid.innerHTML = ""; // Limpiar
+
+            let contadorCargados = 0;
+
+            for (const key in DB_PECES) {
+                const pez = DB_PECES[key];
+                
+                // Comprobamos si la especie habita geográficamente la zona pulsada en el mapa
+                if (pez.habitats.includes(habitatId)) {
+                    contadorCargados++;
+                    
+                    const card = document.createElement('button');
+                    card.id = `btn-${key}`;
+                    card.onclick = () => verDetalleEspecie(key);
+                    card.className = `p-4 rounded-xl border text-left bg-slate-900 border-slate-800 hover:border-slate-500 transition-all transform hover:-translate-y-1`;
+                    card.innerHTML = `
+                        <div class="flex items-center justify-between">
+                            <span class="text-xl">${pez.emoji}</span>
+                            <span class="text-[9px] bg-slate-950 px-1.5 py-0.5 rounded text-slate-400 font-mono">DETECTADO</span>
+                        </div>
+                        <span class="text-xs font-black text-white block mt-2">${pez.nombre}</span>
+                        <span class="text-[9px] text-slate-500 block italic">${pez.cientifico}</span>
+                    `;
+                    grid.appendChild(card);
+                }
+            }
+
+            // Ocultar el reporte estratégico si cambiamos de sitio hasta que se vuelva a pinchar un pez
+            document.getElementById('reporte-contenedor').classList.add('hidden');
+            especieSeleccionada = '';
+        }
+
+        // DESPLIEGUE DEL INFORME TÉCNICO CON IMAGEN
+        function verDetalleEspecie(key) {
+            especieSeleccionada = key;
+            const pez = DB_PECES[key];
+
+            // Iluminar botón seleccionado
+            for (const k in DB_PECES) {
+                const btn = document.getElementById(`btn-${k}`);
+                if (btn) {
+                    if (k === key) btn.className = `p-4 rounded-xl border-2 text-left bg-slate-850 ${pez.colorClass} transition-all`;
+                    else btn.className = `p-4 rounded-xl border text-left bg-slate-900 border-slate-800 hover:border-slate-700 transition-all`;
+                }
+            }
+
+            // Calcular índice de actividad cruzando la presión barométrica simulada del mapa
+            const txtActividad = document.getElementById('rep-actividad-texto');
+            if (presionActual > 1017) {
+                txtActividad.innerText = "MODERADA (Peces Suspendidos en Capas Medias)";
+                txtActividad.className = "text-xs font-bold text-amber-400";
+            } else if (presionActual < 1011) {
+                txtActividad.innerText = "CRÍTICA / BAJA (Apatía Letárgica en el Fondo)";
+                txtActividad.className = "text-xs font-bold text-rose-400";
+            } else {
+                txtActividad.innerText = "ALTA / ÓPTIMA (Frenesí de Caza Activo)";
+                txtActividad.className = "text-xs font-bold text-emerald-400";
+            }
+
+            // Inyectar textos
+            document.getElementById('rep-especie-titulo').innerText = `${pez.emoji} ${pez.nombre}`;
+            document.getElementById('rep-tipo-agua').innerText = `Ficha técnica de patrones biológicos para ${pez.cientifico}`;
+            
+            document.getElementById('rep-zona-rio').innerText = pez.rio;
+            document.getElementById('rep-zona-lago').innerText = pez.lago;
+            document.getElementById('rep-zona-pantano').innerText = pez.pantano;
+
+            document.getElementById('rep-lure-nombre').innerText = pez.senueloNombre;
+            document.getElementById('rep-lure-desc').innerText = pez.senueloDesc;
+            document.getElementById('rep-lure-alt').innerText = pez.senueloAlt;
+
+            document.getElementById('rep-tech-cana').innerText = pez.cana;
+            document.getElementById('rep-tech-carrete').innerText = pez.carrete;
+            document.getElementById('rep-tech-linea').innerText = pez.linea;
+            document.getElementById('rep-tech-bajo').innerText = pez.bajo;
+
+            // Tratamiento de la imagen del señuelo/montaje
+            const imgEl = document.getElementById('rep-lure-img');
+            const placeholderEl = document.getElementById('rep-lure-img-placeholder');
+
+            if (pez.img) {
+                imgEl.src = pez.img;
+                imgEl.classList.remove('hidden');
+                placeholderEl.classList.add('hidden');
+            } else {
+                imgEl.classList.add('hidden');
+                placeholderEl.classList.remove('hidden');
+            }
+
+            // Mostrar bloque e ir suavemente con scroll
+            document.getElementById('reporte-contenedor').classList.remove('hidden');
+            document.getElementById('reporte-contenedor').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initMapa();
+            // Cargar datos por defecto de Mequinenza al inicio
+            analizarPuntoGeografico(41.37, -0.30, 'Embalse de Mequinenza');
+        });
+    </script>
+</body>
+</html>
