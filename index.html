@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AQUA SCAN PRO - Sonar Matrix v8.5 Enterprise</title>
+    <title>AQUA SCAN PRO - Sonar Matrix v9.0 Real Biome</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -33,9 +33,9 @@
         <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-4">
             <div>
                 <div class="flex items-center justify-center lg:justify-start gap-2 mb-0.5">
-                    <span class="bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded text-[9px] font-bold tracking-widest border border-emerald-500/20 uppercase">Sonar Matrix v8.5 Tactical</span>
+                    <span class="bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded text-[9px] font-bold tracking-widest border border-emerald-500/20 uppercase">Sonar Matrix v9.0 VERIFIED BIOMASS</span>
                     <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Algoritmo de Capas e Hidrodinámica</span>
+                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Muestreos Técnicos Oficiales Aragón</span>
                 </div>
                 <h1 class="text-2xl font-black text-white tracking-wider flex items-center gap-2">
                     AQUA SCAN PRO <span class="text-xs font-normal text-slate-500">| SISTEMA DE PREDICCIÓN GLOBAL</span>
@@ -83,7 +83,7 @@
                         <button onclick="cargarPuntoCalibrado(41.3045, -0.0392, 'Caspe (Mar de Aragón)', 'Pantano')" class="bg-slate-950 border border-slate-800 hover:border-emerald-500 text-[10px] font-bold p-2 rounded-lg text-slate-400 transition-colors">Caspe (Mar)</button>
                         <button onclick="cargarPuntoCalibrado(41.3702, -0.3015, 'Embalse Mequinenza', 'Pantano')" class="bg-slate-950 border border-slate-800 hover:border-emerald-500 text-[10px] font-bold p-2 rounded-lg text-slate-400 transition-colors">Mequinenza</button>
                         <button onclick="cargarPuntoCalibrado(41.4312, -0.9168, 'Embalse Mezalocha', 'Pantano')" class="bg-slate-950 border border-slate-800 hover:border-emerald-500 text-[10px] font-bold p-2 rounded-lg text-slate-400 transition-colors">Mezalocha</button>
-                        <button onclick="cargarPuntoCalibrado(41.3341, -1.0253, 'Embalse de Tosos', 'Pantano')" class="bg-slate-950 border border-slate-800 hover:border-emerald-500 text-[10px] font-bold p-2 rounded-lg text-slate-400 transition-colors">Tosos</button>
+                        <button onclick="cargarPuntoCalibrado(41.3341, -1.0253, 'Embalse de Tosos', 'Pantano')" class="bg-slate-950 border border-slate-800 hover:border-emerald-500 text-[10px] font-bold p-2 rounded-lg text-slate-400 transition-colors">Tosos (Las Torcas)</button>
                         <button onclick="cargarPuntoCalibrado(41.3556, -1.2981, 'Balsa de Cosuenda', 'Balsa')" class="bg-slate-950 border border-orange-500/40 hover:border-orange-400 text-[10px] font-bold p-2 rounded-lg text-orange-400 transition-colors">Cosuenda 🌟</button>
                     </div>
                 </div>
@@ -134,7 +134,7 @@
         </div>
 
         <h2 class="text-xs font-bold mb-4 text-slate-400 uppercase tracking-widest flex items-center gap-2">
-            <span class="w-1.5 h-3 bg-emerald-500 rounded-full"></span> Análisis de Objetivos Detectados en Escáner
+            <span class="w-1.5 h-3 bg-emerald-500 rounded-full"></span> Análisis de Objetivos Detectados en Escáner (Muestreo Oficial)
         </h2>
         
         <div id="grid-especies" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3 mb-8">
@@ -178,7 +178,6 @@
                     </div>
 
                     <div class="relative flex-1 my-4 flex justify-between gap-2">
-                        
                         <div class="flex-1 flex flex-col justify-between border-l-2 border-dashed border-cyan-500/20 pl-2 z-10">
                             <div id="capa-superficie" class="flex-1 border-b border-slate-850/40 flex items-center justify-between relative transition-all">
                                 <span class="text-[9px] text-slate-500 font-mono uppercase">0m - Superficie</span>
@@ -202,12 +201,13 @@
                                 <line x1="35" y1="140" x2="38" y2="142" stroke="#94a3b8" stroke-width="2"/>
                                 <line x1="55" y1="70" x2="58" y2="72" stroke="#94a3b8" stroke-width="2"/>
                                 <line x1="85" y1="15" x2="88" y2="17" stroke="#38bdf8" stroke-width="2.5"/>
-                                
                                 <rect x="14" y="175" width="10" height="18" rx="2" fill="#1e293b" stroke="#64748b" stroke-width="1"/>
-                                <ellipse cx="19" cy="184" rx="7" ry="5" fill="#e2e8f0"/> <path d="M12,184 L6,180 L6,172" fill="none" stroke="#64748b" stroke-width="1.5"/> <path id="rig-hilo-madre" d="M19,180 Q38,142 58,72 Q88,17 90,20 L90,110" fill="none" stroke="#38bdf8" stroke-width="1" stroke-dasharray="3,1" class="animate-[pulse_2s_infinite]"/>
-                                
+                                <ellipse cx="19" cy="184" rx="7" ry="5" fill="#e2e8f0"/>
+                                <path d="M12,184 L6,180 L6,172" fill="none" stroke="#64748b" stroke-width="1.5"/>
+                                <path id="rig-hilo-madre" d="M19,180 Q38,142 58,72 Q88,17 90,20 L90,110" fill="none" stroke="#38bdf8" stroke-width="1" stroke-dasharray="3,1" class="animate-[pulse_2s_infinite]"/>
                                 <polygon id="rig-plomo" points="90,110 87,120 93,120" fill="#ef4444"/>
-                                <line x1="90" y1="120" x2="90" y2="145" stroke="#94a3b8" stroke-width="1"/> <path id="rig-lure" d="M90,145 Q90,158 84,158 Q79,158 80,150 Q80,146 84,148" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/>
+                                <line x1="90" y1="120" x2="90" y2="145" stroke="#94a3b8" stroke-width="1"/>
+                                <path id="rig-lure" d="M90,145 Q90,158 84,158 Q79,158 80,150 Q80,146 84,148" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/>
                                 <circle id="rig-boilie" cx="82" cy="153" r="3.5" fill="#f59e0b" class="animate-ping"/>
                             </svg>
                         </div>
@@ -247,38 +247,52 @@
             carpa: `<svg viewBox="0 0 100 60" class="w-14 h-9 stroke-amber-400 fill-none stroke-2"><path d="M10,30 Q35,5 70,25 Q85,18 92,28 Q85,38 70,32 Q35,53 10,30 Z"/></svg>`,
             lucio: `<svg viewBox="0 0 100 60" class="w-14 h-9 stroke-teal-400 fill-none stroke-2"><path d="M5,28 Q25,18 65,20 Q82,18 95,26 Q82,34 65,30 Z"/></svg>`,
             alburno: `<svg viewBox="0 0 100 60" class="w-12 h-8 stroke-slate-400 fill-none stroke-1.5"><path d="M12,30 Q32,18 68,24 Q80,20 90,28 Z"/></svg>`,
-            percasol: `<svg viewBox="0 0 100 60" class="w-12 h-8 stroke-purple-400 fill-none stroke-2"><path d="M15,30 Q35,8 65,26 Q78,20 85,28 Z"/></svg>`
+            percasol: `<svg viewBox="0 0 100 60" class="w-12 h-8 stroke-purple-400 fill-none stroke-2"><path d="M15,30 Q35,8 65,26 Q78,20 85,28 Z"/></svg>`,
+            barbo: `<svg viewBox="0 0 100 60" class="w-14 h-9 stroke-yellow-600 fill-none stroke-2"><path d="M5,32 Q25,15 65,25 Q80,20 92,28 Q80,36 65,32 Q25,44 5,32 Z M10,34 Q15,38 12,40"/></svg>`,
+            trucha: `<svg viewBox="0 0 100 60" class="w-14 h-9 stroke-pink-500 fill-none stroke-2"><path d="M10,28 Q30,12 65,20 Q80,15 92,25 Q80,35 65,30 Q30,42 10,28 Z M25,22 C35,22 45,24 55,22"/></svg>`
         };
 
         const DATA_PESCA = {
             siluroa: {
-                nombre: "Siluro A (Spinning)", capa: "medias", colorRig: "#ef4444", cientifico: "Silurus glanis (Lures)", colorClass: "border-red-500/30 hover:border-red-500 bg-red-950/10", habitats: ["Zaragoza", "Caspe", "Mequinenza", "Ribarroja", "Tosos"],
+                nombre: "Siluro (Spinning)", capa: "medias", colorRig: "#ef4444", cientifico: "Silurus glanis (Lures)", colorClass: "border-red-500/30 hover:border-red-500 bg-red-950/10", habitats: ["Zaragoza", "Caspe", "Mequinenza", "Ribarroja"],
                 cana: "Spinning Heavy / Casting (2.40m, Acción 50-150g)", carrete: "Tamaño 5000 ratio rápido", linea: "Trenzado 0.40mm (80 lbs)", bajo: "Fluorocarbono 0.90mm",
                 focoRio: "Corrientes rotas tras las pilastras de puentes.", focoPantano: "Cortados abruptos de piedra y réculas.",
-                configSabores: { grandesMases: { titulo: "Swinbaits Vinilos Grandes (20-25cm)", desc: "Batido de capas medias recuperando de forma lineal pero lenta.", alt: "Alternativa: Cucharillas ondulantes gigantes." }, pequenosMases: { titulo: "Chatterbaits de Alta Vibración", desc: "Estimulación mecánica inmediata para levantar peces suspendidos.", alt: "Alternativa: Vinilos tipo Shad." }, rio: { titulo: "Grip Lures y Ondulantes de Pala Gruesa", desc: "Señuelos que aguanten la gran presión hidráulica del cauce del Ebro.", alt: "Alternativa: Vinilos pesados." } }
+                configSabores: { grandesMases: { titulo: "Swinbaits Vinilos Grandes (20-25cm)", desc: "Batido de capas medias recuperando de forma lineal pero lenta.", alt: "Alternativa: Cucharillas ondulantes gigantes." }, rio: { titulo: "Grip Lures y Ondulantes de Pala Gruesa", desc: "Señuelos que aguanten la gran presión hidráulica del cauce del Ebro.", alt: "Alternativa: Vinilos pesados." } }
             },
             silurob: {
-                nombre: "Siluro B (Fondo)", capa: "fondo", colorRig: "#f97316", cientifico: "Silurus glanis (Heavy Bottom)", colorClass: "border-orange-500/30 hover:border-orange-500 bg-orange-950/10", habitats: ["Zaragoza", "Caspe", "Mequinenza", "Ribarroja", "Tosos"],
+                nombre: "Siluro (Fondo)", capa: "fondo", colorRig: "#f97316", cientifico: "Silurus glanis (Heavy Bottom)", colorClass: "border-orange-500/30 hover:border-orange-500 bg-orange-950/10", habitats: ["Zaragoza", "Caspe", "Mequinenza", "Ribarroja"],
                 cana: "Catfishing Heavy Bottom (3.00m, Acción 200-500g)", carrete: "Bobina Fija Robusta (Tamaño 10000 / Freno >18kg)", linea: "Trenzado de alta densidad 0.52mm (100 lbs)", bajo: "Mono-filamento grueso de 1.0mm o Kevlar",
                 focoRio: "Pozas profundas excavadas bajo la corriente principal.", focoPantano: "Antiguos cauces inundados y lechos limosos.",
-                configSabores: { grandesMases: { titulo: "Pellet de Monstruo y Pasta de Cangrejo (Halibut / Krill Salado)", desc: "En los macroembalses, el siluro busca aporte proteico masivo. Montajes de 2-3 pellets de 30mm rascando el lecho limoso.", alt: "Alternativa de impacto: Hígado de pollo." }, pequenosMases: { titulo: "Cebos Dulces de Alta Atracción (Chufa Dulce / Scopex / Plátano Crema)", desc: "En masas cerradas y técnicas, la presión altera su comportamiento. Los boilies gigantes o chufas con perfiles de fruta madura evitan recelos.", alt: "Alternativa: Mazacote de maíz fermentado." }, rio: { titulo: "Pelletería de Sangre Intensa y Tripa de Ave", desc: "En la corriente, el cebo necesita soltar un rastro molecular kilométrico. Los pellets perforados soportan la fuerza del agua.", alt: "Alternativa: Calamar gigante." } }
+                configSabores: { grandesMases: { titulo: "Pellet de Monstruo y Pasta de Cangrejo (Halibut / Krill Salado)", desc: "En los macroembalses, el siluro busca aporte proteico masivo. Montajes de 2-3 pellets de 30mm rascando el lecho limoso.", alt: "Alternativa de impacto: Hígado de pollo." }, rio: { titulo: "Pelletería de Sangre Intensa y Tripa de Ave", desc: "En la corriente, el cebo necesita soltar un rastro molecular kilométrico.", alt: "Alternativa: Calamar gigante." } }
             },
             carpa: {
                 nombre: "Carpa", capa: "fondo", colorRig: "#f59e0b", cientifico: "Cyprinus carpio", colorClass: "border-amber-500/30 hover:border-amber-500 bg-amber-950/10", habitats: ["Zaragoza", "Mezalocha", "Tosos", "Caspe", "Mequinenza", "Ribarroja", "Cosuenda"],
                 cana: "12ft Carpfishing (3.25 lbs) / O telescópica cebador técnica", carrete: "Baitrunner de oscilación lenta u optimizado", linea: "Monofilamento técnico 0.35mm", bajo: "Trenzado Hooklink flexible 25 lbs / Fluorocarbono discreto para balsa",
-                focoRio: "Remansos profundos tras las islands de grava del Ebro.", focoPantano: "Playas de arcilla y recodos abrigados.", focoBalsa: "Zonas de densa vegetación/hierbas subacuáticas o totalmente pegadas a la pared de hormigón/piedra de la balsa.",
+                focoRio: "Remansos profundos tras las islas de grava del Ebro.", focoPantano: "Playas de arcilla y recodos abrigados.", focoBalsa: "Zonas de densa vegetación/hierbas subacuáticas o totalmente pegadas a la pared de hormigón/piedra de la balsa.",
                 configSabores: {
                     grandesMases: { titulo: "Hair Rig con Boilie Salado de Krill & Cangrejo de Río", desc: "En el Mar de Aragón el cangrejo es su dieta base. Los cebaderos masivos concentran los bancos.", alt: "Alternativa: Cebado con grano salado." },
-                    pequenosMases: { titulo: "Montajes Visuales con Sabores Dulces (Piña, Fresa y Chufa)", desc: "En Tosos y Mezalocha la carpa reacciona de maravilla al aroma frutal. Un boilie flotante resalta en fondos oscuros.", alt: "Alternativa: Racimo bañado en Scopex." },
+                    pequenosMases: { titulo: "Montajes Visuales con Sabores Dulces (Piña, Fresa y Chufa)", desc: "En Tosos la carpa reacciona de maravilla al aroma frutal. Un cebo balanceado o un grano de maíz dulce con piña resalta en fondos oscuros de roca.", alt: "Alternativa: Racimo bañado en Scopex." },
                     rio: { titulo: "Cebado de Maíz Fermentado Duro y Chufa Natural", desc: "Para el río Ebro, se usan granos pesados que la corriente no desplace fácilmente.", alt: "Alternativa: Remojo en Robin Red." },
                     balsa: { titulo: "Montajes Pop-Ups Altamente Visuales e Impregnación en Sabores Dulces", desc: "Estrategia específica para la Balsa de Cosuenda. Las carpas patrullan los perímetros de hormigón y los claros de hierba. El uso de pop-ups (cebos flotantes) es crítico para evitar que el anzuelo se entierre en la vegetación.", alt: "Aroma óptimo: Chufa dulce, Piña fluo o Scopex intenso sobre la pared de la balsa." }
                 }
             },
-            bass: { nombre: "Black Bass", capa: "medias", colorRig: "#38bdf8", cientifico: "Micropterus salmoides", colorClass: "border-sky-500/30 hover:border-sky-500 bg-sky-950/10", habitats: ["Mezalocha", "Tosos", "Caspe", "Mequinenza", "Ribarroja"], cana: "6'8\" MH Fast Action", carrete: "Casting rápido", linea: "Trenzado 30 lbs", bajo: "Fluorocarbono 0.35mm", focoRio: "Estructuras muertas.", focoPantano: "Cortados de piedra y árboles sumergidos.", configSabores: { grandesMases: { titulo: "Cangrejos de Vinilo con Sal", desc: "Sondeando coberturas profundas.", alt: "Alternativa: Swimbait." }, pequenosMases: { titulo: "Criaturas Finesse sin Plomo", desc: "Discreción máxima y caídas muy lentas en colores oscuros.", alt: "Alternativa: Poppers." }, rio: { titulo: "Spinnerbaits de palas anchas", desc: "Vibración sónica pura en aguas revueltas.", alt: "Crankbaits." } } },
-            lucioperca: { nombre: "Lucioperca", capa: "fondo", colorRig: "#10b981", cientifico: "Sander lucioperca", colorClass: "border-emerald-500/30 hover:border-emerald-500 bg-emerald-950/10", habitats: ["Zaragoza", "Mezalocha", "Tosos", "Caspe", "Mequinenza", "Ribarroja"], cana: "7'3\" Extra-Fast", carrete: "Spinning 2500", linea: "Trenzado PE 0.12mm", bajo: "Fluorocarbono 0.26mm", focoRio: "Piedras profundas.", focoPantano: "Taludes de arcilla limpia de 8 a 15 metros.", configSabores: { grandesMases: { titulo: "Soft Shads con Esencia", desc: "Rascando badenes rocosos profundos.", alt: "Carolina Rig." }, pequenosMases: { titulo: "Vinilos pequeños con aroma a Calamar", desc: "Movimientos muy sutiles en aguas claras.", alt: "Twitchbaits." }, rio: { titulo: "Shads plomados de colores flúor", desc: "Colores reactivos para batir las aguas tomadas del Ebro.", alt: "Cucharilla." } } },
-            lucio: { nombre: "Lucio", capa: "medias", colorRig: "#14b8a6", cientifico: "Esox lucius", colorClass: "border-teal-500/30 hover:border-teal-500 bg-teal-950/10", habitats: ["Mezalocha", "Tosos", "Caspe", "Mequinenza"], cana: "7'2\" Heavy", carrete: "Casting robusto", linea: "Trenzado 40 lbs", bajo: "Titanio anti-dientes", focoRio: "Zonas muertas sin corriente.", focoPantano: "Puntas de islas y algueros.", configSabores: { grandesMases: { titulo: "Shads Gigantes de 20cm", desc: "Buscando activar al gran depredador suspendido.", alt: "Grandes ondulantes." }, pequenosMases: { titulo: "Jerkbaits técnicos", desc: "Estímulos reactivos rápidos en las coberturas de Mezalocha.", alt: "Vinilos cola de hoz." }, rio: { titulo: "Swinbaits de hundimiento rápido", desc: "Buscando cortar la corriente cerca de muros.", alt: "Cucharas pesadas." } } },
-            alburno: { nombre: "Alburno", capa: "superficie", colorRig: "#94a3b8", cientifico: "Alburnus alburnus", colorClass: "border-slate-500/30 hover:border-slate-400 bg-slate-950/10", habitats: ["Zaragoza", "Mezalocha", "Tosos", "Caspe", "Mequinenza", "Ribarroja"], cana: "Coup telescópica 3m", carrete: "Línea directa", linea: "Monofilamento 0.12mm", bajo: "Anzuelo n° 22", focoRio: "Corrientes mansas.", focoPantano: "Nubes masivas en réculas.", configSabores: { grandesMases: { titulo: "Asticot vivo", desc: "Manteniendo el cardumen activo bajo el flotador.", alt: "Masilla neutra." }, pequenosMases: { titulo: "Asticot con Vainilla Dulce", desc: "Acelera su frenesí devorador en aguas paradas.", alt: "Masilla dulce." }, rio: { titulo: "Enguado ligero de superficie", desc: "Nube de cebado flotante a favor de corriente.", alt: "Caster." } } },
-            percasol: { nombre: "Percasol", capa: "superficie", colorRig: "#a855f7", cientifico: "Lepomis gibbosus", colorClass: "border-purple-500/30 hover:border-purple-500 bg-purple-950/10", habitats: ["Mezalocha", "Tosos", "Caspe", "Mequinenza", "Ribarroja"], cana: "Rockfishing", carrete: "Tamaño 1000", linea: "Monofilamento 0.16mm", bajo: "Anzuelo n° 16", focoRio: "Márgenes sin flujo.", focoPantano: "Paredes rocosas y rampas.", configSabores: { grandesMases: { titulo: "Lombriz troceada", desc: "Rascando los bloques orillados.", alt: "Microvinilos." }, pequenosMases: { titulo: "Microvinilos dulces", desc: "Patrullando la orilla inmediata.", alt: "Microcucharilla." }, rio: { titulo: "Lombriz natural", desc: "Pegado a las raíces.", alt: "No computado." } } }
+            bass: { nombre: "Black Bass", capa: "medias", colorRig: "#38bdf8", cientifico: "Micropterus salmoides", colorClass: "border-sky-500/30 hover:border-sky-500 bg-sky-950/10", habitats: ["Mezalocha", "Tosos", "Caspe", "Mequinenza", "Ribarroja"], cana: "6'8\" MH Fast Action", carrete: "Casting rápido", linea: "Trenzado 30 lbs", bajo: "Fluorocarbono 0.35mm", focoRio: "Estructuras muertas.", focoPantano: "Cortados de piedra y árboles sumergidos.", configSabores: { grandesMases: { titulo: "Cangrejos de Vinilo con Sal", desc: "Sondeando coberturas profundas.", alt: "Alternativa: Swimbait." }, pequenosMases: { titulo: "Criaturas Finesse sin Plomo (Ned Rig / Wacky)", desc: "Discreción máxima y caídas muy lentas en las aguas claras de Tosos o Mezalocha.", alt: "Alternativa: Poppers en coberturas orilladas." }, rio: { titulo: "Spinnerbaits de palas anchas", desc: "Vibración sónica pura en aguas revueltas.", alt: "Crankbaits." } } },
+            lucioperca: { nombre: "Lucioperca", capa: "fondo", colorRig: "#10b981", cientifico: "Sander lucioperca", colorClass: "border-emerald-500/30 hover:border-emerald-500 bg-emerald-950/10", habitats: ["Zaragoza", "Mezalocha", "Caspe", "Mequinenza", "Ribarroja"], cana: "7'3\" Extra-Fast", carrete: "Spinning 2500", linea: "Trenzado PE 0.12mm", bajo: "Fluorocarbono 0.26mm", focoRio: "Piedras profundas.", focoPantano: "Taludes de arcilla limpia de 8 a 15 metros.", configSabores: { grandesMases: { titulo: "Soft Shads con Esencia", desc: "Rascando badenes rocosos profundos.", alt: "Carolina Rig." }, pequenosMases: { titulo: "Vinilos pequeños con aroma a Calamar", desc: "Movimientos muy sutiles en aguas claras.", alt: "Twitchbaits." }, rio: { titulo: "Shads plomados de colores flúor", desc: "Colores reactivos para batir las aguas tomadas del Ebro.", alt: "Cucharilla." } } },
+            lucio: { nombre: "Lucio", capa: "medias", colorRig: "#14b8a6", cientifico: "Esox lucius", colorClass: "border-teal-500/30 hover:border-teal-500 bg-teal-950/10", habitats: ["Mezalocha", "Caspe", "Mequinenza"], cana: "7'2\" Heavy", carrete: "Casting robusto", linea: "Trenzado 40 lbs", bajo: "Titanio anti-dientes", focoRio: "Zonas muertas sin corriente.", focoPantano: "Puntas de islas y algueros.", configSabores: { grandesMases: { titulo: "Shads Gigantes de 20cm", desc: "Buscando activar al gran depredador suspendido.", alt: "Grandes ondulantes." }, pequenosMases: { titulo: "Jerkbaits técnicos", desc: "Estímulos reactivos rápidos en las coberturas de Mezalocha.", alt: "Vinilos cola de hoz." }, rio: { titulo: "Swinbaits de hundimiento rápido", desc: "Buscando cortar la corriente cerca de muros.", alt: "Cucharas pesadas." } } },
+            alburno: { nombre: "Alburno", capa: "superficie", colorRig: "#94a3b8", cientifico: "Alburnus alburnus", colorClass: "border-slate-500/30 hover:border-slate-400 bg-slate-950/10", habitats: ["Zaragoza", "Mezalocha", "Caspe", "Mequinenza", "Ribarroja"], cana: "Coup telescópica 3m", carrete: "Línea directa", linea: "Monofilamento 0.12mm", bajo: "Anzuelo n° 22", focoRio: "Corrientes mansas.", focoPantano: "Nubes masivas en réculas.", configSabores: { grandesMases: { titulo: "Asticot vivo", desc: "Manteniendo el cardumen activo bajo el flotador.", alt: "Masilla neutra." }, pequenosMases: { titulo: "Asticot con Vainilla Dulce", desc: "Acelera su frenesí devorador en aguas paradas.", alt: "Masilla dulce." }, rio: { titulo: "Enguado ligero de superficie", desc: "Nube de cebado flotante a favor de corriente.", alt: "Caster." } } },
+            percasol: { nombre: "Percasol", capa: "superficie", colorRig: "#a855f7", cientifico: "Lepomis gibbosus", colorClass: "border-purple-500/30 hover:border-purple-500 bg-purple-950/10", habitats: ["Mezalocha", "Tosos", "Caspe", "Mequinenza", "Ribarroja"], cana: "Rockfishing", carrete: "Tamaño 1000", linea: "Monofilamento 0.16mm", bajo: "Anzuelo n° 16", focoRio: "Márgenes sin flujo.", focoPantano: "Paredes rocosas y rampas.", configSabores: { grandesMases: { titulo: "Lombriz troceada", desc: "Rascando los bloques orillados.", alt: "Microvinilos." }, pequenosMases: { titulo: "Microvinilos dulces", desc: "Patrullando la orilla inmediata.", alt: "Microcucharilla." }, rio: { titulo: "Lombriz natural", desc: "Pegado a las raíces.", alt: "No computado." } } },
+            barbo: { 
+                nombre: "Barbo Ebro", capa: "fondo", colorRig: "#b45309", cientifico: "Barbus graellsii / mediterraneus", colorClass: "border-amber-700/40 hover:border-amber-600 bg-amber-950/20", habitats: ["Zaragoza", "Tosos", "Caspe", "Mequinenza"], 
+                cana: "Feeder / Heavy Feeder (3.60m, Acción hasta 90g)", carrete: "Tamaño 4000 con freno micrométrico", linea: "Monofilamento 0.22mm o Trenzado Fino", bajo: "Fluorocarbono de 0.18mm a 0.20mm",
+                focoRio: "Cunas de grava limpia con corriente moderada-fuerte.", focoPantano: "Recodos profundos de entrada de agua limpia en Tosos.",
+                configSabores: { grandesMases: { titulo: "Pellets de Queso / Halibut pequeño (8-12mm)", desc: "En embalses grandes buscan perfiles cárnicos y salados.", alt: "Alternativa: Maíz dulce remojado." }, pequenosMases: { titulo: "Montaje Feeder con Asticot / Gusano de Licra o Masilla de Queso Fuerte", desc: "Estrategia de alta precisión en Tosos. El barbo de montaña responde de inmediato al olor a queso curado o racimo denso de asticot en el lecho.", alt: "Alternativa: Lombriz de tierra roja." }, rio: { titulo: "Inyección de Huella de Sangre / Cangrejo triturado", desc: "En el Ebro, el barbo busca activamente el cebo pesado rascando piedras.", alt: "Alternativa: Asticot clavado." } }
+            },
+            trucha: { 
+                nombre: "Trucha Arcoíris", capa: "medias", colorRig: "#ec4899", cientifico: "Oncorhynchus mykiss", colorClass: "border-pink-500/30 hover:border-pink-500 bg-pink-950/10", habitats: ["Tosos"], 
+                cana: "Ultra Light / Spinning Finesse (1.80m - 2.10m, Acción 1-7g)", carrete: "Tamaño 1000 - 2000 ratio rápido", linea: "Monofilamento de alta visibilidad 0.16mm o trenzado PE 0.06", bajo: "Fluorocarbono puro 0.14mm - 0.16mm",
+                focoRio: "No aplica flujo libre constante.", focoPantano: "Zonas cercanas a la presa y cortados de entrada de agua fresca del Huerva.",
+                configSabores: { pequenosMases: { titulo: "Cucharillas Giratorias (N° 1 o 2) o Masillas Flotantes de Cebo Artificial (PowerBait)", desc: "Específico de Tosos. Las truchas patrullan en grupos las capas medias buscando eclosiones o estímulos vibratorios de cucharillas de pala cebra o plata.", alt: "Alternativa: Pequeños peces artificiales (Minnows de 3-5cm) en colores naturales." } }
+            }
         };
 
         function initMapa() {
@@ -453,7 +467,6 @@
             document.getElementById('rig-lure').setAttribute('stroke', targetColor);
             document.getElementById('rig-plomo').setAttribute('fill', targetColor);
 
-            // Ajustar altura de plomada e hilo en función de la profundidad elegida
             const plomo = document.getElementById('rig-plomo');
             const lHilo = document.getElementById('rig-hilo-madre');
             const lure = document.getElementById('rig-lure');
