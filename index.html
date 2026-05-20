@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AQUA SCAN PRO - Sonar Matrix v7.0</title>
+    <title>AQUA SCAN PRO - Sonar Matrix v7.1</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -12,10 +12,13 @@
             font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
             background-color: #030712;
         }
+        /* Forzamos dimensiones y visualización del contenedor */
         #map {
             height: 400px;
+            width: 100%;
             border-radius: 14px;
             z-index: 10;
+            display: block !important;
         }
         .leaflet-container {
             background: #090d16 !important;
@@ -31,7 +34,7 @@
         <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-4">
             <div>
                 <div class="flex items-center justify-center lg:justify-start gap-2 mb-0.5">
-                    <span class="bg-sky-500/10 text-sky-400 px-2 py-0.5 rounded text-[9px] font-bold tracking-widest border border-sky-500/20 uppercase">Sonar Depth Matrix v7.0</span>
+                    <span class="bg-sky-500/10 text-sky-400 px-2 py-0.5 rounded text-[9px] font-bold tracking-widest border border-sky-500/20 uppercase">Sonar Depth Matrix v7.1</span>
                     <div class="w-2 h-2 rounded-full bg-cyan-500 animate-pulse"></div>
                     <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Escáner de Capas Hidrostáticas</span>
                 </div>
@@ -69,7 +72,9 @@
                         </h2>
                         <span id="txt-geo-nombre-mini" class="text-[10px] text-amber-400 font-mono">--</span>
                     </div>
-                    <div id="map" class="border border-slate-800 shadow-inner"></div>
+                    <div class="w-full bg-slate-950 rounded-xl overflow-hidden border border-slate-800">
+                        <div id="map"></div>
+                    </div>
                 </div>
                 
                 <div class="mt-4">
@@ -149,7 +154,6 @@
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-                
                 <div class="lg:col-span-2 space-y-4">
                     <div class="bg-slate-950/40 border border-slate-850 p-4 rounded-xl">
                         <span class="text-[10px] font-bold text-sky-400 block uppercase tracking-widest mb-1">🎯 Comportamiento Biológico Sumado</span>
@@ -168,4 +172,246 @@
 
                 <div class="bg-gradient-to-b from-slate-950 to-slate-900 border border-slate-800 p-4 rounded-xl flex flex-col justify-between min-h-[320px]">
                     <div class="text-center border-b border-slate-850 pb-2">
-                        <span class="text-[10px] font-bold text-cyan-400 tracking-wider uppercase block">📟
+                        <span class="text-[10px] font-bold text-cyan-400 tracking-wider uppercase block">📟 Radar de Capa Hidrostática</span>
+                        <span id="sonar-capa-activa" class="text-[9px] text-slate-500 font-mono">Localizando objetivo...</span>
+                    </div>
+
+                    <div class="relative flex-1 my-4 flex flex-col justify-between border-l-2 border-dashed border-cyan-500/30 pl-4">
+                        <div id="capa-superficie" class="flex-1 border-b border-slate-800/60 flex items-center justify-between relative group transition-colors">
+                            <span class="text-[10px] text-slate-500 font-mono uppercase">0m - Superficie</span>
+                            <div id="sonar-icon-sup" class="opacity-10 transition-all transform scale-70 absolute right-4"></div>
+                        </div>
+
+                        <div id="capa-medias" class="flex-1 border-b border-slate-800/60 flex items-center justify-between relative group transition-colors">
+                            <span class="text-[10px] text-slate-500 font-mono uppercase">Mid - Aguas Medias</span>
+                            <div id="sonar-icon-med" class="opacity-10 transition-all transform scale-70 absolute right-4"></div>
+                        </div>
+
+                        <div id="capa-fondo" class="flex-1 flex items-center justify-between relative group transition-colors">
+                            <span class="text-[10px] text-slate-500 font-mono uppercase">Bed - Fondo / Lecho</span>
+                            <div id="sonar-icon-fon" class="opacity-10 transition-all transform scale-70 absolute right-4"></div>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-950 p-2 rounded border border-slate-850 text-center">
+                        <span class="text-[9px] text-slate-400 block font-mono">TERMOCLINA ESTIMADA: <span class="text-emerald-400 font-bold">14.2°C</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-slate-950/80 p-4 rounded-xl border border-slate-850/80">
+                <span class="text-[10px] font-bold text-purple-400 uppercase tracking-wider block mb-3">⚙️ Ficha Estructural de Ingeniería de Materiales</span>
+                <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 font-mono text-[11px]">
+                    <div class="border-b sm:border-b-0 sm:border-r border-slate-850 pb-2 sm:pb-0 sm:pr-2"><span class="text-slate-500 block text-[9px]">MÓDULO CAÑA:</span><span id="rep-tech-cana" class="text-slate-200 font-bold">--</span></div>
+                    <div class="border-b sm:border-b-0 sm:border-r border-slate-850 pb-2 sm:pb-0 sm:pr-2"><span class="text-slate-500 block text-[9px]">MÓDULO CARRETE:</span><span id="rep-tech-carrete" class="text-slate-200 font-bold">--</span></div>
+                    <div class="border-b sm:border-b-0 sm:border-r border-slate-850 pb-2 sm:pb-0 sm:pr-2"><span class="text-slate-500 block text-[9px]">LÍNEA MADRE:</span><span id="rep-tech-linea" class="text-slate-200 font-bold">--</span></div>
+                    <div><span class="text-slate-500 block text-[9px]">TERMINAL BAJO:</span><span id="rep-tech-bajo" class="text-slate-200 font-bold">--</span></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let mapa;
+        let marcador;
+        let presionActual = 1013;
+        let entornoDetectado = "Río"; 
+        let ubicacionNombre = "Río Ebro (Zaragoza)";
+
+        const CONTORNOS_SVG = {
+            bass: `<svg viewBox="0 0 100 60" class="w-14 h-9 stroke-sky-400 fill-none stroke-2"><path d="M10,30 Q30,10 65,22 Q80,15 90,25 Q80,35 65,28 Q30,50 10,30 Z M65,22 Q50,30 35,28 M65,25 L75,12 L68,26 M40,41 L45,49"/></svg>`,
+            siluro: `<svg viewBox="0 0 100 60" class="w-14 h-9 stroke-red-400 fill-none stroke-2"><path d="M5,25 Q25,12 60,20 Q80,18 95,25 Q75,32 50,35 Q20,38 5,25 Z M12,22 Q5,15 2,24 M12,27 Q5,35 1,27 M55,21 L75,25"/></svg>`,
+            lucioperca: `<svg viewBox="0 0 100 60" class="w-14 h-9 stroke-emerald-400 fill-none stroke-2"><path d="M8,28 Q25,10 60,22 Q80,16 92,26 Q80,34 60,30 Q25,44 8,28 Z M25,17 L35,8 L42,19 M48,20 L55,10 M35,34 L40,43"/></svg>`,
+            carpa: `<svg viewBox="0 0 100 60" class="w-14 h-9 stroke-amber-400 fill-none stroke-2"><path d="M10,30 Q35,5 70,25 Q85,18 92,28 Q85,38 70,32 Q35,53 10,30 Z M45,15 Q55,13 62,21 M45,41 L48,50"/></svg>`,
+            lucio: `<svg viewBox="0 0 100 60" class="w-14 h-9 stroke-teal-400 fill-none stroke-2"><path d="M5,28 Q25,18 65,20 Q82,18 95,26 Q82,34 65,30 Q25,34 5,28 Z M70,20 L78,13 M70,30 L76,37"/></svg>`,
+            alburno: `<svg viewBox="0 0 100 60" class="w-12 h-8 stroke-slate-400 fill-none stroke-1.5"><path d="M12,30 Q32,18 68,24 Q80,20 90,28 Q80,36 68,32 Q32,40 12,30 Z"/></svg>`,
+            percasol: `<svg viewBox="0 0 100 60" class="w-12 h-8 stroke-purple-400 fill-none stroke-2"><path d="M15,30 Q35,8 65,26 Q78,20 85,28 Q78,36 65,31 Q35,48 15,30 Z M25,18 Q40,12 55,21"/></svg>`
+        };
+
+        const DATA_PESCA = {
+            bass: { nombre: "Black Bass", capa: "medias", cientifico: "M. salmoides", colorClass: "border-sky-500/30 hover:border-sky-500 bg-sky-950/10", habitats: ["Mezalocha", "Tosos", "Caspe", "Mequinenza", "Ribarroja"], cana: "6'8\" MH Fast", carrete: "Baitcasting (7.1:1)", linea: "Trenzado 30 lbs", bajo: "Fluorocarbono 0.35mm", lureNombre: "Texas Rig con Cangrejo de Vinilo Flotante", lureDesc: "Fijado en capas medias y someras buscando vegetación muerta u orillas escarpadas de Mezalocha y Tosos.", lureAlt: "Alternativa: Jerkbait duro.", focoRio: "Presencia residual.", focoPantano: "Sondea árboles caídos y escalones de piedra mediana." },
+            siluro: { nombre: "Siluro", capa: "fondo", cientifico: "S. glanis", colorClass: "border-red-500/30 hover:border-red-500 bg-red-950/10", habitats: ["Zaragoza", "Caspe", "Mequinenza", "Ribarroja"], cana: "9'0\" Extra Heavy", carrete: "Spinning de Fuerza (>15kg freno)", linea: "Trenzado 0.45mm (80 lbs)", bajo: "Kevlar de 100 lbs", lureNombre: "Grandes Shads de Vinilo Pesados (Cola pala)", lureDesc: "Habita estrictamente en el lecho profundo del fango o badenes de piedra. El cebo debe rascar el fondo.", lureAlt: "Alternativa: Cucharilla pesada ondulante.", focoRio: "Pozas hondas tras espigones del Ebro.", focoPantano: "Antiguos cauces y lechos de fango estables." },
+            lucioperca: { nombre: "Lucioperca", capa: "fondo", cientifico: "S. lucioperca", colorClass: "border-emerald-500/30 hover:border-emerald-500 bg-emerald-950/10", habitats: ["Zaragoza", "Mezalocha", "Tosos", "Caspe", "Mequinenza", "Ribarroja"], cana: "7'3\" Extra-Fast", carrete: "Spinning compacto 2500", linea: "Trenzado PE 0.12mm", bajo: "Fluorocarbono 0.26mm", lureNombre: "Soft Shad en cabeza plomada", lureDesc: "Pez de fondo puro. Evita la luz diurna bajando a capas bajas de grava limpia en Tosos o pilares profundos del Ebro.", lureAlt: "Alternativa: Vinilo técnico al estilo Carolina.", focoRio: "Piedras profundas a contracorriente.", focoPantano: "Taludes de arcilla limpia de 8 a 12 metros de profundidad." },
+            carpa: { nombre: "Carpa", capa: "fondo", cientifico: "C. carpio", colorClass: "border-amber-500/30 hover:border-amber-500 bg-amber-950/10", habitats: ["Zaragoza", "Mezalocha", "Tosos", "Caspe", "Mequinenza", "Ribarroja"], cana: "12ft Carpfishing", carrete: "Baitrunner de bobina ancha", linea: "Monofilamento 0.35mm", bajo: "Trenzado Hooklink 25 lbs", lureNombre: "Hair Rig con Boilie fondón de Krill", lureDesc: "Alimenta succionando limos del fondo. El montaje debe descansar quieto en camas de cebado compactas.", lureAlt: "Alternativa: Racimo de maíz dulce con grano flotante.", focoRio: "Remansos de agua mansa limosas.", focoPantano: "Playas someras de fango blando." },
+            lucio: { nombre: "Lucio", capa: "medias", cientifico: "E. lucius", colorClass: "border-teal-500/30 hover:border-teal-500 bg-teal-950/10", habitats: ["Mezalocha", "Tosos", "Caspe", "Mequinenza"], cana: "7'2\" Heavy", carrete: "Casting robusto", linea: "Trenzado de 40 lbs", bajo: "Bajo de Acero o Titanio anti-dientes", lureNombre: "Jerkbaits de babero corto o Spinnerbaits", lureDesc: "Cazador de emboscada suspendido en aguas medias. Ataca de abajo hacia arriba cuando la presa pasa por encima.", lureAlt: "Alternativa: Vinilos grandes de cola rizada.", focoRio: "Zonas muertas sin corriente.", focoPantano: "Puntas de islas rocosas y límites de algueros." },
+            alburno: { nombre: "Alburno", capa: "superficie", cientifico: "A. alburnus", colorClass: "border-slate-500/30 hover:border-slate-400 bg-slate-950/10", habitats: ["Zaragoza", "Mezalocha", "Tosos", "Caspe", "Mequinenza", "Ribarroja"], cana: "Coup telescópica de 3m", carrete: "No requiere / Microcarrete", linea: "Monofilamento 0.12mm", bajo: "Anzuelo micro n° 20", lureNombre: "Flotador de pluma con Asticot natural", lureDesc: "Pez pasto superficial. Se mueve en nubes densas rompiendo la superficie del agua de forma constante.", lureAlt: "Alternativa: Masilla fina de pan blanco.", focoRio: "Márgenes calmadas y orillas urbanas.", focoPantano: "Réculas abrigadas del viento." },
+            percasol: { nombre: "Percasol", capa: "superficie", cientifico: "L. gibbosus", colorClass: "border-purple-500/30 hover:border-purple-500 bg-purple-950/10", habitats: ["Mezalocha", "Tosos", "Caspe", "Mequinenza", "Ribarroja"], cana: "Ultra Ligera de Rockfishing", carrete: "Tamaño 1000 micro", linea: "Monofilamento 0.16mm", bajo: "Línea directa limpia", lureNombre: "Microvinilos de criatura (1.5cm)", lureDesc: "Patrulla las orillas inmediatas a ras de superficie y piedras someras custodiando puestas y nidos.", lureAlt: "Alternativa: Cucharilla micro n° 0.", focoRio: "Inexistente en corrientes.", focoPantano: "Paredes de presas, muelles y bloques someros." }
+        };
+
+        function initMapa() {
+            // Inicialización directa
+            mapa = L.map('map').setView([41.5000, -0.8000], 8);
+
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; CARTO'
+            }).addTo(mapa);
+
+            marcador = L.marker([41.6575, -0.8762]).addTo(mapa);
+
+            // Forzar a Leaflet a recalcular tamaños tras montarse
+            setTimeout(() => {
+                mapa.invalidateSize();
+            }, 200);
+
+            mapa.on('click', function(e) {
+                const lat = e.latlng.lat;
+                const lng = e.latlng.lng;
+                let nombrePunto = "Zona Fluvial Cuenca";
+                let tipo = "Río";
+
+                if (lat > 41.25 && lat < 41.35 && lng > -0.15 && lng < 0.05) { nombrePunto = "Caspe (Mar de Aragón)"; tipo = "Pantano"; }
+                else if (lat > 41.33 && lat < 41.42 && lng >= 0.05 && lng < 0.35) { nombrePunto = "Embalse Mequinenza"; tipo = "Pantano"; }
+                else if (lat > 41.15 && lat < 41.30 && lng >= 0.35) { nombrePunto = "Embalse de Ribarroja"; tipo = "Pantano"; }
+                else if (lat > 41.40 && lat < 41.46 && lng > -1.00 && lng < -0.85) { nombrePunto = "Embalse Mezalocha"; tipo = "Pantano"; }
+                else if (lat > 41.30 && lat < 41.36 && lng > -1.10 && lng < -0.98) { nombrePunto = "Embalse de Tosos"; tipo = "Pantano"; }
+                else if (lat > 41.60 && lat < 41.70 && lng > -0.95 && lng < -0.75) { nombrePunto = "Río Ebro (Zaragoza)"; tipo = "Río"; }
+                else {
+                    tipo = (lat % 1 + lng % 1) > 0.45 ? "Pantano" : "Río";
+                    nombrePunto = tipo === "Río" ? "Tramo Fluvial Libre" : "Masa Estanca";
+                }
+                cargarPuntoCalibrado(lat, lng, nombrePunto, tipo);
+            });
+        }
+
+        function cargarPuntoCalibrado(lat, lng, nombre, tipoAgua) {
+            if(marcador) marcador.setLatLng([lat, lng]);
+            if(mapa) mapa.panTo([lat, lng]);
+            
+            entornoDetectado = tipoAgua;
+            ubicacionNombre = nombre;
+
+            document.getElementById('txt-geo-coor').innerText = `${lat.toFixed(3)}, ${lng.toFixed(3)}`;
+            document.getElementById('txt-geo-nombre').innerText = nombre;
+            document.getElementById('txt-geo-nombre-mini').innerText = nombre;
+
+            const badge = document.getElementById('txt-entorno-detectado');
+            if (tipoAgua === "Río") {
+                badge.innerText = "🌊 FLUVIAL / RÍO";
+                badge.className = "text-xs font-black text-sky-400 tracking-wide";
+                document.getElementById('txt-turbidez').innerText = "Turbio (0.7m)";
+            } else {
+                badge.innerText = "🏔️ EMBALSE / LAGO";
+                badge.className = "text-xs font-black text-teal-400 tracking-wide";
+                document.getElementById('txt-turbidez').innerText = "Claro (2.3m)";
+            }
+
+            const calculo = Math.abs(Math.sin(lat) * Math.cos(lng));
+            presionActual = Math.floor(1009 + (calculo * 14));
+            let temp = Math.floor(15 + (calculo * 9));
+            let viento = Math.floor(4 + (calculo * 30));
+
+            document.getElementById('txt-presion').innerText = `${presionActual} hPa`;
+            document.getElementById('txt-temp').innerText = `${temp}°C`;
+            document.getElementById('txt-viento').innerText = `${viento} km/h`;
+
+            document.getElementById('txt-icon').innerText = presionActual > 1015 ? "☀️" : "⛅";
+            document.getElementById('txt-clima').innerText = presionActual > 1015 ? "Estabilidad Térmica" : "Presión Variable";
+            
+            document.getElementById('txt-tendencia').innerText = presionActual > 1015 ? "ALTA" : "NORMAL";
+            document.getElementById('txt-tendencia').className = `text-[10px] font-mono px-2 py-0.5 rounded border ${presionActual > 1015 ? "border-emerald-500 text-emerald-400" : "border-slate-700 text-slate-400"}`;
+
+            const hoy = new Date(); const dia = hoy.getDate();
+            document.getElementById('txt-luna-nombre').innerText = `Ciclo Mensual (Fuerza Activa)`;
+            document.getElementById('txt-solunar-horas').innerHTML = `Ventana Óptima: <span class="text-emerald-400">07:${(dia%4)+10}h</span> a <span class="text-emerald-400">11:15h</span>`;
+
+            renderizarMatrizEspecies();
+        }
+
+        function renderizarMatrizEspecies() {
+            const grid = document.getElementById('grid-especies');
+            grid.innerHTML = "";
+
+            let idFiltro = "Zaragoza";
+            if (ubicacionNombre.includes("Caspe")) idFiltro = "Caspe";
+            if (ubicacionNombre.includes("Mequinenza")) idFiltro = "Mequinenza";
+            if (ubicacionNombre.includes("Ribarroja")) idFiltro = "Ribarroja";
+            if (ubicacionNombre.includes("Mezalocha")) idFiltro = "Mezalocha";
+            if (ubicacionNombre.includes("Tosos")) idFiltro = "Tosos";
+
+            for (const key in DATA_PESCA) {
+                const pez = DATA_PESCA[key];
+
+                if (pez.habitats.includes(idFiltro) || (idFiltro === "Zaragoza" && pez.habitats.includes("Zaragoza"))) {
+                    const card = document.createElement('button');
+                    card.id = `btn-${key}`;
+                    card.onclick = () => abrirConsolaEspecie(key);
+                    card.className = `p-3 rounded-xl border flex flex-col items-center text-center transition-all ${pez.colorClass}`;
+                    
+                    card.innerHTML = `
+                        <div class="mb-2 flex items-center justify-center h-10 w-full opacity-80">
+                            ${CONTORNOS_SVG[key]}
+                        </div>
+                        <span class="text-[11px] font-black text-white block uppercase tracking-wide truncate w-full">${pez.nombre}</span>
+                    `;
+                    grid.appendChild(card);
+                }
+            }
+            document.getElementById('reporte-contenedor').classList.add('hidden');
+        }
+
+        function abrirConsolaEspecie(key) {
+            const pez = DATA_PESCA[key];
+
+            const txtAct = document.getElementById('rep-actividad-texto');
+            if (presionActual > 1015) { txtAct.innerText = "CRÍTICA / SUSPENDIDOS"; txtAct.className = "text-xs font-mono font-bold text-amber-400"; }
+            else { txtAct.innerText = "ALTA / ACTIVA EN CAPA"; txtAct.className = "text-xs font-mono font-bold text-emerald-400"; }
+
+            document.getElementById('rep-especie-titulo').innerText = `SONAR: ${pez.nombre}`;
+            document.getElementById('rep-subtitulo').innerText = `Taxonomía de profundidad aplicada para ${pez.cientifico}`;
+
+            if (entornoDetectado === "Río") {
+                document.getElementById('rep-zona-foco').innerText = `PATRÓN EN RÍO: En ${ubicacionNombre}, se localizan en: ${pez.focoRio}`;
+            } else {
+                document.getElementById('rep-zona-foco').innerText = `PATRÓN EN EMBALSE: En ${ubicacionNombre}, se localizan en: ${pez.focoPantano}`;
+            }
+
+            document.getElementById('rep-lure-nombre').innerText = pez.lureNombre;
+            document.getElementById('rep-lure-desc').innerText = pez.lureDesc;
+            document.getElementById('rep-lure-alt').innerText = pez.lureAlt;
+            document.getElementById('rep-tech-cana').innerText = pez.cana;
+            document.getElementById('rep-tech-carrete').innerText = pez.carrete;
+            document.getElementById('rep-tech-linea').innerText = pez.linea;
+            document.getElementById('rep-tech-bajo').innerText = pez.bajo;
+
+            ["superficie", "medias", "fondo"].forEach(c => {
+                document.getElementById(`capa-${c}`).classList.remove('bg-cyan-500/10', 'border-l-4', 'border-cyan-400');
+            });
+            document.getElementById('sonar-icon-sup').innerHTML = "";
+            document.getElementById('sonar-icon-med').innerHTML = "";
+            document.getElementById('sonar-icon-fon').innerHTML = "";
+
+            let destinoIcono = "sonar-icon-med";
+            let nombreCapaVisual = "AGUAS MEDIAS (Termoclina)";
+            
+            if (pez.capa === "superficie") {
+                destinoIcono = "sonar-icon-sup";
+                nombreCapaVisual = "SUPERFICIE / CAPA DE OXÍGENO";
+            } else if (pez.capa === "fondo") {
+                destinoIcono = "sonar-icon-fon";
+                nombreCapaVisual = "FONDO / LECHO DE GRAVA Y LIMOS";
+            }
+
+            const capaBloque = document.getElementById(`capa-${pez.capa}`);
+            capaBloque.classList.add('bg-cyan-500/10', 'border-l-4', 'border-cyan-400');
+            
+            const contenedorIcono = document.getElementById(destinoIcono);
+            contenedorIcono.innerHTML = CONTORNOS_SVG[key];
+            contenedorIcono.style.opacity = "1";
+
+            document.getElementById('sonar-capa-activa').innerText = `OBJETIVO CAPTADO EN: ${nombreCapaVisual}`;
+
+            document.getElementById('reporte-contenedor').classList.remove('hidden');
+            document.getElementById('reporte-contenedor').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // Ejecución robusta esperando la carga del DOM
+        window.addEventListener('DOMContentLoaded', () => {
+            initMapa();
+            // Retardo mínimo para asegurar que Leaflet pinte las capas correctamente sobre el fondo oscuro
+            setTimeout(() => {
+                cargarPuntoCalibrado(41.6575, -0.8762, "Río Ebro (Zaragoza)", "Río");
+            }, 100);
+        });
+    </script>
+</body>
+</html>
