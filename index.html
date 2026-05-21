@@ -3,146 +3,614 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sónar de Pesca Profesional</title>
+    <title>Sónar de Pesca Profesional - Aragón</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        .shadow-glow { box-shadow: 0 0 15px rgba(6, 182, 212, 0.15); }
+    </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen font-sans">
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans selection:bg-cyan-500 selection:text-slate-950">
 
-    <!-- Estructura Principal -->
     <div class="max-w-md mx-auto p-4 pb-12 space-y-4">
-        <header class="flex justify-between items-center bg-slate-900 border border-slate-800 p-3 rounded-2xl">
+        
+        <header class="flex justify-between items-center bg-slate-900/90 border border-slate-800 p-3 rounded-2xl backdrop-blur">
             <div>
-                <h1 class="text-sm font-black text-cyan-400 uppercase">SÓNAR TÁCTICO</h1>
-                <p id="txt-geo-nombre" class="text-[10px] text-slate-500 font-mono">Cargando...</p>
+                <h1 class="text-sm font-black tracking-wider text-cyan-400 uppercase">MAPA DE PRECISIÓN</h1>
+                <p id="txt-geo-nombre" class="text-[11px] text-slate-400 font-mono">Cargando estación...</p>
             </div>
-            <button onclick="abrirCamara()" class="bg-cyan-500 text-slate-950 px-3 py-1.5 rounded-lg font-black text-[10px]">REGISTRAR</button>
+            <div class="text-right font-mono text-[10px]">
+                <span id="txt-geo-coor" class="text-slate-500 block">00.000, 00.000</span>
+                <span id="txt-entorno-detectado" class="text-cyan-400 font-bold block">---</span>
+            </div>
         </header>
 
         <nav class="flex gap-2">
-            <button id="b-mapa" onclick="alternarVentana(false)" class="flex-1 bg-cyan-500 text-slate-950 text-xs font-bold px-3 py-2.5 rounded-xl">MAPA</button>
-            <button id="b-pokedex" onclick="alternarVentana(true)" class="flex-1 bg-slate-800 text-slate-300 text-xs font-bold px-3 py-2.5 rounded-xl">CAPTURAS (<span id="pokedex-contador">0</span>)</button>
+            <button id="btn-nav-mapa" onclick="mostrarVentana('mapa')" class="flex-1 bg-cyan-500 text-slate-950 text-xs font-bold px-3 py-2.5 rounded-xl transition-all">🗺️ MAPA CARTOGRÁFICO</button>
+            <button id="btn-nav-pokedex" onclick="mostrarVentana('pokedex')" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold px-3 py-2.5 rounded-xl transition-all">📸 CAPTURAS (<span id="pokedex-contador">0</span>)</button>
         </nav>
 
-        <div id="v-mapa" class="space-y-4">
-            <div id="mapa-satelital" class="h-[210px] w-full rounded-xl border border-slate-800 overflow-hidden"></div>
-            <div id="consejos-zona" class="bg-slate-900 p-3 rounded-xl border border-slate-800 text-xs text-slate-400 italic"></div>
+        <div id="ventana-mapa" class="space-y-4">
+            
+            <div class="bg-slate-900 border border-slate-800 p-2 rounded-2xl relative shadow-glow">
+                
+                <div class="h-[210px] w-full bg-[#030712] rounded-xl relative overflow-hidden border border-slate-800">
+                    
+                    <div class="absolute inset-0 opacity-15 pointer-events-none" style="background-size: 20px 20px; background-image: linear-gradient(to right, #0891b2 1px, transparent 1px), linear-gradient(to bottom, #0891b2 1px, transparent 1px);"></div>
+                    <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(6,182,212,0.05)_0%,transparent_80%)] pointer-events-none"></div>
+                    
+                    <svg id="svg-mapa-tactico" class="w-full h-full relative z-10" viewBox="0 0 300 210">
+                        </svg>
+
+                    <div class="absolute bottom-2 left-2 z-20 bg-slate-950/90 border border-cyan-500/30 px-2 py-1 rounded text-[8px] font-mono flex gap-2 text-slate-400">
+                        <span class="flex items-center gap-1"><span class="w-2 h-2 rounded bg-cyan-950 border border-cyan-500"></span> Masa de agua</span>
+                        <span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span> Zona Pesca</span>
+                    </div>
+                </div>
+                
+                <div class="p-1.5 flex flex-wrap gap-1 bg-slate-950/60 rounded-xl mt-2 border border-slate-800/50">
+                    <button onclick="seleccionarTramoPreset('ebro')" class="text-[9px] font-mono bg-slate-900 hover:bg-slate-800 px-2 py-1 rounded text-slate-300">Zaragoza (Río)</button>
+                    <button onclick="seleccionarTramoPreset('caspe')" class="text-[9px] font-mono bg-slate-900 hover:bg-slate-800 px-2 py-1 rounded text-slate-300">Caspe</button>
+                    <button onclick="seleccionarTramoPreset('mequinenza')" class="text-[9px] font-mono bg-slate-900 hover:bg-slate-800 px-2 py-1 rounded text-slate-300">Mequinenza</button>
+                    <button onclick="seleccionarTramoPreset('cosuenda')" class="text-[9px] font-mono border border-emerald-500/30 bg-emerald-950/20 hover:bg-emerald-900/40 px-2 py-1 rounded text-emerald-400 font-bold">Cosuenda 📍</button>
+                    <button onclick="seleccionarTramoPreset('mezalocha')" class="text-[9px] font-mono bg-slate-900 hover:bg-slate-800 px-2 py-1 rounded text-slate-300">Mezalocha</button>
+                    <button onclick="seleccionarTramoPreset('tosos')" class="text-[9px] font-mono bg-slate-900 hover:bg-slate-800 px-2 py-1 rounded text-slate-300">Tosos</button>
+                </div>
+
+                <div class="grid grid-cols-4 gap-1 text-center font-mono mt-2 pt-2 border-t border-slate-800 text-[10px]">
+                    <div class="bg-slate-950/40 p-1.5 rounded">
+                        <span class="text-slate-500 block text-[9px]">BARÓMETRO</span>
+                        <span id="txt-presion" class="text-white font-bold">---</span>
+                    </div>
+                    <div class="bg-slate-950/40 p-1.5 rounded">
+                        <span class="text-slate-500 block text-[9px]">AGUA</span>
+                        <span id="txt-temp" class="text-emerald-400 font-bold">---</span>
+                    </div>
+                    <div class="bg-slate-950/40 p-1.5 rounded">
+                        <span class="text-slate-500 block text-[9px]">VIENTO</span>
+                        <span id="txt-viento" class="text-amber-400 font-bold">---</span>
+                    </div>
+                    <div class="bg-slate-950/40 p-1.5 rounded">
+                        <span class="text-slate-500 block text-[9px]">VISIBILIDAD</span>
+                        <span id="txt-turbidez" class="text-sky-400 font-bold">---</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-slate-900/60 border border-slate-800/80 p-3 rounded-2xl">
+                <h2 class="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2.5 flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse"></span> ESPECIES EN LA ZONA
+                </h2>
+                <div id="grid-especies" class="grid grid-cols-4 gap-2">
+                    </div>
+            </div>
+
+            <div id="reporte-contenedor" class="hidden bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-4 shadow-glow">
+                <div class="flex justify-between items-start border-b border-slate-800 pb-3">
+                    <div>
+                        <h3 id="rep-especie-titulo" class="text-sm font-black text-white uppercase tracking-wide">OBJETIVO</h3>
+                        <p id="rep-subtitulo" class="text-[10px] text-slate-500 font-mono italic">Taxonomía</p>
+                    </div>
+                    <span id="rep-actividad-texto" class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-slate-950 border border-slate-800">---</span>
+                </div>
+
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="col-span-1 flex flex-col gap-1 text-[9px] font-mono justify-center">
+                        <div id="capa-superficie" class="p-1 border border-slate-800/40 rounded flex justify-between items-center bg-slate-900/40">
+                            <span>SUP</span><div id="sonar-icon-sup" class="w-6 h-4 flex items-center justify-center"></div>
+                        </div>
+                        <div id="capa-medias" class="p-1 border border-slate-800/40 rounded flex justify-between items-center bg-slate-900/40">
+                            <span>MED</span><div id="sonar-icon-med" class="w-6 h-4 flex items-center justify-center"></div>
+                        </div>
+                        <div id="capa-fondo" class="p-1 border border-slate-800/40 rounded flex justify-between items-center bg-slate-900/40">
+                            <span>FON</span><div id="sonar-icon-fon" class="w-6 h-4 flex items-center justify-center"></div>
+                        </div>
+                    </div>
+
+                    <div class="col-span-2 bg-slate-950 rounded-xl border border-slate-800 p-2 flex items-center justify-center relative overflow-hidden">
+                        <span class="absolute top-1 left-2 text-[8px] font-mono text-slate-500">ESQUEMA TÉCNICO DE MONTAJE</span>
+                        <svg id="svg-aparejo" class="w-full h-32" viewBox="0 0 160 200">
+                            </svg>
+                        <span id="val-termoclina" class="absolute bottom-1 right-2 text-[8px] font-mono text-cyan-500"></span>
+                    </div>
+                </div>
+
+                <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 space-y-1">
+                    <div class="flex justify-between items-center text-[10px] font-mono">
+                        <span class="text-slate-500">TÁCTICA RECOMENDADA:</span>
+                        <span id="rep-lure-alt" class="text-amber-400 font-bold uppercase text-[9px]"></span>
+                    </div>
+                    <h4 id="rep-lure-nombre" class="text-xs font-black text-cyan-400 uppercase">Boilie Salado</h4>
+                    <p id="rep-lure-desc" class="text-xs text-slate-400 leading-relaxed"></p>
+                    <p id="rep-zona-foco" class="text-[10px] font-mono text-slate-400 border-t border-slate-900 pt-1.5 mt-1.5"></p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 text-[10px] font-mono bg-slate-950/50 p-2.5 rounded-xl border border-slate-800/60">
+                    <div><span class="text-slate-500 block text-[9px]">CAÑA:</span><span id="rep-tech-cana" class="text-slate-300"></span></div>
+                    <div><span class="text-slate-500 block text-[9px]">LÍNEA:</span><span id="rep-tech-linea" class="text-slate-300"></span></div>
+                    <div><span class="text-slate-500 block text-[9px]">CARRETE:</span><span id="rep-tech-carrete" class="text-slate-300"></span></div>
+                    <div><span class="text-slate-500 block text-[9px]">BAJO DE LÍNEA:</span><span id="rep-tech-bajo" class="text-slate-300"></span></div>
+                </div>
+            </div>
         </div>
 
-        <div id="v-pokedex" class="hidden space-y-4">
-            <div id="grid-pokedex" class="grid grid-cols-2 gap-3"></div>
+        <div id="ventana-pokedex" class="space-y-4 hidden">
+            <button onclick="abrirCamara()" class="w-full bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-500 hover:to-teal-500 text-slate-950 font-black text-xs py-3.5 rounded-xl transition-all tracking-wider shadow-lg flex items-center justify-center gap-2">
+                📸 REGISTRAR NUEVA CAPTURA
+            </button>
+            <div id="grid-pokedex" class="grid grid-cols-2 gap-3">
+                </div>
         </div>
+
     </div>
 
-    <!-- Modal Cámara -->
-    <div id="modal-camara" class="fixed inset-0 bg-black z-50 hidden flex flex-col">
-        <video id="video-camara" autoplay playsinline class="w-full h-full object-cover"></video>
-        <canvas id="canvas-foto" class="hidden w-full h-full object-cover"></canvas>
-        <div id="controles-disparo" class="absolute bottom-10 w-full text-center">
-            <button onclick="capturarFoto()" class="w-16 h-16 bg-white rounded-full"></button>
+    <div id="modal-camara" class="fixed inset-0 bg-slate-950/95 z-50 flex flex-col justify-between p-4 hidden">
+        <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+            <h3 class="text-sm font-black tracking-widest text-cyan-400 uppercase">SISTEMA ÓPTICO DE VALIDACIÓN</h3>
+            <button onclick="cerrarCamara()" class="text-slate-500 hover:text-white text-xs font-mono bg-slate-900 px-2 py-1 rounded">CERRAR [X]</button>
         </div>
-        <div id="formulario-captura" class="hidden absolute bottom-0 w-full p-6 bg-slate-900 rounded-t-3xl">
-            <select id="ins-especie" class="w-full bg-slate-800 p-3 rounded-lg mb-2 text-sm text-white"></select>
-            <input id="ins-lugar" type="text" readonly class="w-full bg-slate-950 p-3 rounded-lg mb-4 text-slate-500 text-sm">
-            <button onclick="guardarCaptura()" class="w-full bg-cyan-500 text-slate-950 font-bold py-3 rounded-lg">GUARDAR</button>
+        <div class="relative w-full max-h-[60vh] aspect-video bg-black rounded-2xl overflow-hidden border border-slate-800 flex items-center justify-center my-auto">
+            <video id="video-camara" autoplay playsinline class="w-full h-full object-cover"></video>
+            <canvas id="canvas-foto" class="w-full h-full object-cover hidden"></canvas>
+        </div>
+        <div class="space-y-4">
+            <div id="controles-disparo" class="flex justify-center pb-4">
+                <button onclick="capturarFoto()" class="w-16 h-16 rounded-full border-4 border-white bg-slate-950/20 active:bg-white transition-all flex items-center justify-center shadow-xl"></button>
+            </div>
+            <div id="formulario-captura" class="space-y-3 hidden bg-slate-900 p-4 rounded-2xl border border-slate-800">
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="text-[9px] font-mono text-slate-500 block uppercase mb-1">Especie Indexada</label>
+                        <select id="ins-especie" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs font-bold text-white focus:outline-none focus:border-cyan-500">
+                            <option value="carpa">Carpa Común</option>
+                            <option value="siluro">Siluro</option>
+                            <option value="bass">Black Bass</option>
+                            <option value="lucioperca">Lucioperca</option>
+                            <option value="lucio">Lucio</option>
+                            <option value="alburno">Alburno</option>
+                            <option value="percasol">Percasol</option>
+                            <option value="barbo">Barbo Ebro</option>
+                            <option value="trucha">Trucha Arcoíris</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-[9px] font-mono text-slate-500 block uppercase mb-1">Ubicación Estación</label>
+                        <input id="ins-lugar" type="text" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs font-mono text-slate-300 focus:outline-none focus:border-cyan-500" />
+                    </div>
+                </div>
+                <div class="flex gap-2 pt-2">
+                    <button onclick="repetirFoto()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-xs font-bold py-2.5 rounded-xl transition-all">REPETIR FOTO</button>
+                    <button onclick="guardarCaptura()" class="flex-1 bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-black py-2.5 rounded-xl transition-all">CONSOLIDAR CAPTURA</button>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        // --- BASE DE DATOS ESTRUCTURADA ---
-        const DATA_PESCA = {
-            "siluro": { nombre: "Siluro", consejo: "Busca en zonas profundas y con estructuras sumergidas. Usa señuelos grandes." },
-            "lucioperca": { nombre: "Lucioperca", consejo: "Activa al amanecer y atardecer. Prefiere fondos rocosos." },
-            "blackbass": { nombre: "Black Bass", consejo: "Zonas de vegetación y recodos tranquilos. Imprescindible precisión." }
+        // PRESETS GEOGRÁFICOS
+        const PRESETS_UBICACION = {
+            ebro: { lat: 41.6575, lng: -0.8762, nombre: "Río Ebro (Zaragoza)", tipo: "Río" },
+            caspe: { lat: 41.2952, lng: -0.0412, nombre: "Caspe (Mar de Aragón)", tipo: "Pantano" },
+            mequinenza: { lat: 41.3712, lng: 0.2815, nombre: "Embalse Mequinenza", tipo: "Pantano" },
+            cosuenda: { lat: 41.3541, lng: -1.2985, nombre: "Balsa de Cosuenda", tipo: "Pantano" },
+            mezalocha: { lat: 41.4285, lng: -0.9152, nombre: "Embalse Mezalocha", tipo: "Pantano" },
+            tosos: { lat: 41.3321, lng: -1.0215, nombre: "Embalse de Tosos", tipo: "Pantano" }
         };
 
+        // CONTORNOS BIOLÓGICOS SVG
         const CONTORNOS_SVG = {
-            "siluro": `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 12c0 5 8 10 20 2-2-8-10-8-20-2z"/></svg>`,
-            "lucioperca": `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 10l16-4v4l-16 4z"/></svg>`,
-            "blackbass": `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6 2 2 6 2 12s4 10 10 10 10-4 10-10S18 2 12 2z"/></svg>`
+            carpa: `<svg viewBox="0 0 512 300" class="w-full h-full fill-current"><path d="M500,140 C430,90 340,60 260,80 C200,95 150,130 90,135 C60,138 30,120 10,105 C5,130 12,160 35,175 C60,190 95,170 130,175 C200,185 270,210 350,195 C410,180 470,170 500,140 Z M180,120 C170,120 160,110 160,100 C160,90 170,80 180,80 C190,80 200,90 200,100 C200,110 190,120 180,120 Z" opacity="0.85"/></svg>`,
+            siluro: `<svg viewBox="0 0 512 200" class="w-full h-full fill-current"><path d="M500,90 C440,70 340,55 240,70 C160,82 110,110 60,115 C35,118 15,100 5,85 C0,105 8,135 25,145 C50,160 85,130 140,125 C220,118 320,135 400,125 C460,115 485,105 500,90 Z M90,95 C85,95 80,90 80,85 C80,80 85,75 90,75 C95,75 100,80 100,85 C100,90 95,95 90,95 Z" opacity="0.85"/></svg>`,
+            bass: `<svg viewBox="0 0 512 300" class="w-full h-full fill-current"><path d="M495,130 C435,85 365,70 290,82 C220,92 165,120 110,125 C75,128 40,110 15,95 C10,115 15,145 35,160 C65,180 105,160 150,165 C220,172 295,195 370,180 C430,168 475,155 495,130 Z M220,115 C210,115 200,105 200,95 C200,85 210,75 220,75 C230,75 240,85 240,95 C240,105 230,115 220,115 Z" opacity="0.85"/></svg>`,
+            lucioperca: `<svg viewBox="0 0 512 220" class="w-full h-full fill-current"><path d="M505,100 C445,75 365,65 295,75 C225,85 165,110 115,112 C75,114 45,98 15,85 C10,105 12,135 32,145 C62,160 102,140 145,142 C225,145 305,165 380,150 C440,138 485,122 505,100 Z M250,100 C242,100 235,92 235,85 C235,78 242,70 250,70 C258,70 265,78 265,85 C265,92 258,100 250,100 Z" opacity="0.85"/></svg>`,
+            lucio: `<svg viewBox="0 0 512 180" class="w-full h-full fill-current"><path d="M508,80 C448,65 378,55 308,62 C228,70 158,95 108,98 C68,100 38,88 12,75 C8,95 10,120 28,130 C58,145 98,125 148,122 C238,118 328,132 408,120 C468,110 492,95 508,80 Z M330,85 C322,85 315,78 315,70 C315,62 322,55 330,55 C338,55 345,62 345,70 C345,78 338,85 330,85 Z" opacity="0.85"/></svg>`,
+            alburno: `<svg viewBox="0 0 512 160" class="w-full h-full fill-current"><path d="M505,75 C445,60 375,52 305,58 C235,65 175,85 125,88 C85,90 55,80 20,68 C15,85 22,105 40,112 C70,125 110,110 155,108 C235,105 315,118 385,108 C445,100 485,90 505,75 Z" opacity="0.85"/></svg>`,
+            percasol: `<svg viewBox="0 0 512 340" class="w-full h-full fill-current"><path d="M490,160 C420,100 340,80 260,105 C190,125 130,160 80,165 C50,168 25,145 5,130 C0,155 10,190 35,210 C65,230 115,200 165,210 C245,225 325,255 405,230 C465,210 485,185 490,160 Z" opacity="0.85"/></svg>`,
+            barbo: `<svg viewBox="0 0 512 220" class="w-full h-full fill-current"><path d="M504,105 C444,80 364,70 294,80 C224,90 164,115 114,118 C74,120 44,105 12,92 C8,112 12,142 32,152 C62,168 102,145 144,148 C224,152 304,172 379,158 C439,146 484,128 504,105 Z" opacity="0.85"/></svg>`,
+            trucha: `<svg viewBox="0 0 512 240" class="w-full h-full fill-current"><path d="M508,110 C448,85 368,75 298,85 C228,95 168,120 118,122 C78,124 48,108 15,95 C10,115 14,145 34,155 C64,170 104,150 148,152 C228,155 308,175 383,160 C443,148 488,132 508,110 Z" opacity="0.85"/></svg>`
         };
 
-        const PRESETS = {
-            ebro: { lat: 41.6575, lng: -0.8762, nombre: "Río Ebro - Zaragoza", especie: "siluro" },
-            caspe: { lat: 41.2333, lng: -0.0333, nombre: "Embalse de Caspe", especie: "lucioperca" }
+        // BASE DE DATOS DE PESCA
+        const DATA_PESCA = {
+            carpa: {
+                nombre: "Carpa Común", capa: "fondo", colorRig: "#eab308", cientifico: "Cyprinus carpio", colorClass: "border-yellow-500/30 hover:border-yellow-500 bg-yellow-950/10 text-yellow-500", habitats: ["Zaragoza", "Caspe", "Mequinenza", "Mezalocha", "Tosos", "Cosuenda"], cana: "Carpfishing 12ft 3.5lb", carrete: "Baitrunner 10000", linea: "Monofilamento 0.35mm", bajo: "Trenzado con Hair Rig",
+                focoRio: "Remansos profundos tras las islas de grava del Ebro.", focoPantano: "Playas de arcilla y recodos abrigados.",
+                configSabores: { 
+                    grandesMases: { titulo: "Hair Rig con Boilie Salado de Krill", desc: "En el Mar de Aragón el cangrejo es su dieta base.", alt: "Boilie Krill" }, 
+                    pequenosMases: { titulo: "Montajes Dulces (Piña)", desc: "En Tosos la carpa reacciona de maravilla al aroma frutal.", alt: "Scopex/Piña" }, 
+                    rio: { titulo: "Maíz Fermentado Duro", desc: "Para el Ebro granos pesados anti-corriente.", alt: "Robin Red" },
+                    cosuenda: { titulo: "Boilie de Fresa Dulce Intensa", desc: "Táctica de alta atracción. Colocar el montaje muy cerca de los obstáculos vegetales de la balsa.", alt: "Fresa Dulce" }
+                }
+            },
+            siluro: {
+                nombre: "Siluro", capa: "fondo", colorRig: "#ef4444", cientifico: "Silurus glanis", colorClass: "border-red-500/30 hover:border-red-500 bg-red-950/10 text-red-500", habitats: ["Zaragoza", "Caspe", "Mequinenza"], cana: "Heavy Catfish 4.20m", carrete: "Bobina fija 25kg fuerza", linea: "Trenzado blindado 0.60mm", bajo: "Bucle de Alambre de Acero (Heavy Wire)",
+                focoRio: "Grandes pozas, remolinos de puentes y cuevas de arcilla.", focoPantano: "Cortados abruptos y antiguas estructuras sumergidas en el cauce.",
+                configSabores: {
+                    grandesMases: { titulo: "Pez Vivo / Gran Vinilo (25cm)", desc: "Buscando al gran depredador suspendido cerca del lecho.", alt: "Shad / Vivo" },
+                    rio: { titulo: "Racimo masivo de Lombrices con Pellet de Halibut", desc: "Aroma cárnico denso rascando el fondo lodoso del Ebro.", alt: "Halibut/Lombriz" }
+                }
+            },
+            bass: { 
+                nombre: "Black Bass", capa: "medias", colorRig: "#38bdf8", cientifico: "Micropterus salmoides", colorClass: "border-sky-500/30 hover:border-sky-500 bg-sky-950/10 text-sky-400", habitats: ["Mezalocha", "Tosos", "Caspe", "Mequinenza"], cana: "6'8\" MH Fast Action", carrete: "Casting rápido", linea: "Trenzado 30 lbs", bajo: "Fluorocarbono 0.35mm", 
+                focoRio: "Estructuras muertas u obstáculos de orilla.", focoPantano: "Cortados de piedra y árboles sumergidos.",
+                configSabores: { grandesMases: { titulo: "Cangrejos de Vinilo con Sal", desc: "Sondeando coberturas profundas.", alt: "Swimbait" }, pequenosMases: { titulo: "Criaturas Finesse sin Plomo", desc: "Caídas muy lentas en aguas claras.", alt: "Ned Rig" } } 
+            },
+            lucioperca: { 
+                nombre: "Lucioperca", capa: "fondo", colorRig: "#10b981", cientifico: "Sander lucioperca", colorClass: "border-emerald-500/30 hover:border-emerald-500 bg-emerald-950/10 text-emerald-400", habitats: ["Zaragoza", "Mezalocha", "Caspe", "Mequinenza"], cana: "7'3\" Extra-Fast", carrete: "Spinning 2500", linea: "Trenzado PE 0.12mm", bajo: "Fluorocarbono 0.26mm", 
+                focoRio: "Piedras profundas y pozas del lecho.", focoPantano: "Taludes de arcilla limpia de 8 a 15 metros.",
+                configSabores: { grandesMases: { titulo: "Montaje Jig Head con Vinilo Shad", desc: "Estrategia de lance y recogida lineal rascando el fondo del embalse.", alt: "Jig Head / Shad" }, rio: { titulo: "Shads plomados de colores flúor", desc: "Colores reactivos para batir las aguas tomadas del Ebro.", alt: "Soft Shad" } } 
+            },
+            lucio: { 
+                nombre: "Lucio", capa: "medias", colorRig: "#14b8a6", cientifico: "Esox lucius", colorClass: "border-teal-500/30 hover:border-teal-500 bg-teal-950/10 text-teal-400", habitats: ["Mezalocha", "Caspe", "Mequinenza"], cana: "7'2\" Heavy", carrete: "Casting robusto", linea: "Trenzado 40 lbs", bajo: "Titanio anti-dientes", 
+                focoRio: "Zonas muertas sin corriente.", focoPantano: "Puntas de islas y algueros someros.",
+                configSabores: { grandesMases: { titulo: "Shads Gigantes de 20cm", desc: "Buscando activar al gran depredador.", alt: "Ondulantes" } } 
+            },
+            alburno: { 
+                nombre: "Alburno", capa: "superficie", colorRig: "#94a3b8", cientifico: "Alburnus alburnus", colorClass: "border-slate-500/30 hover:border-slate-400 bg-slate-950/10 text-slate-400", habitats: ["Zaragoza", "Mezalocha", "Caspe", "Mequinenza"], cana: "Coup telescópica 3m", carrete: "Línea directa", linea: "Monofilamento 0.12mm", bajo: "Anzuelo n° 22", 
+                focoRio: "Corrientes mansas de orilla.", focoPantano: "Nubes masivas en réculas.",
+                configSabores: { grandesMases: { titulo: "Asticot vivo", desc: "Manteniendo el cardumen activo.", alt: "Asticot" } } 
+            },
+            percasol: { 
+                nombre: "Percasol", capa: "superficie", colorRig: "#a855f7", cientifico: "Lepomis gibbosus", colorClass: "border-purple-500/30 hover:border-purple-500 bg-purple-950/10 text-purple-400", habitats: ["Mezalocha", "Tosos", "Caspe", "Mequinenza"], cana: "Rockfishing", carrete: "Tamaño 1000", linea: "Monofilamento 0.16mm", bajo: "Anzuelo n° 16", 
+                focoRio: "Márgenes sin flujo.", focoPantano: "Parestes rocosas.",
+                configSabores: { grandesMases: { titulo: "Lombriz troceada", desc: "Rascando los bloques orillados.", alt: "Microvinilos" } } 
+            },
+            barbo: { 
+                nombre: "Barbo Ebro", capa: "fondo", colorRig: "#b45309", cientifico: "Barbus graellsii", colorClass: "border-amber-700/40 hover:border-amber-600 bg-amber-950/20 text-amber-600", habitats: ["Zaragoza", "Tosos", "Caspe", "Mequinenza"], cana: "Feeder Heavy 3.60m", carrete: "Tamaño 4000", linea: "Monofilamento 0.22mm", bajo: "Fluorocarbono 0.18mm", 
+                focoRio: "Cunas de grava limpia con corriente.", focoPantano: "Recodos profundos de entrada de agua.",
+                configSabores: { grandesMases: { titulo: "Pellets de Queso / Halibut", desc: "En embalses buscan perfiles cárnicos.", alt: "Pellet" } } 
+            },
+            trucha: { 
+                nombre: "Trucha Arcoíris", capa: "medias", colorRig: "#ec4899", cientifico: "Oncorhynchus mykiss", colorClass: "border-pink-500/30 hover:border-pink-500 bg-pink-950/10 text-pink-400", habitats: ["Tosos"], cana: "Ultra Light 1.80m", carrete: "Tamaño 1000", linea: "Monofilamento 0.16mm", bajo: "Fluorocarbono 0.14mm", 
+                focoRio: "Zonas de corriente rota.", focoPantano: "Cerca de la presa.",
+                configSabores: { pequenosMases: { titulo: "Cucharillas Giratorias", desc: "Capas medias buscando eclosiones.", alt: "Minnows" } } 
+            }
         };
 
-        let map, markersLayer = L.layerGroup(), ubicacionNombre = "Ebro", streamCamara, fotoBase64;
-
-        // --- LÓGICA MAPA ---
-        function inicializarMapa() {
-            map = L.map('mapa-satelital', { zoomControl: false }).setView([41.6575, -0.8762], 12);
-            L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}').addTo(map);
-            markersLayer.addTo(map);
-        }
+        let entornoDetectado = "Río", ubicacionNombre = "Río Ebro (Zaragoza)", presionActual = 1013;
+        let streamCamara = null, fotoBase64 = null;
 
         function seleccionarTramoPreset(key) {
-            const p = PRESETS[key];
-            ubicacionNombre = p.nombre;
-            document.getElementById('txt-geo-nombre').innerText = p.nombre;
-            document.getElementById('consejos-zona').innerText = "💡 " + DATA_PESCA[p.especie].consejo;
-            map.setView([p.lat, p.lng], 13);
-            markersLayer.clearLayers();
-            L.marker([p.lat, p.lng]).addTo(markersLayer);
+            const data = PRESETS_UBICACION[key];
+            if (data) {
+                cargarPuntoCalibrado(data.lat, data.lng, data.nombre, data.tipo);
+            }
         }
 
-        // --- LÓGICA POKEDEX Y CÁMARA ---
-        function alternarVentana(esPokedex) {
-            document.getElementById('v-mapa').classList.toggle('hidden', esPokedex);
-            document.getElementById('v-pokedex').classList.toggle('hidden', !esPokedex);
-            if(esPokedex) renderizarPokedex();
+        // REDIBUJA EL MAPA ORIGINAL EN NEGRO Y AZUL (SIN NADA DE RADAR NI CÍRCULOS CENTRALES)
+        function renderizarMapaFiel(nombre, calculo) {
+            const svg = document.getElementById('svg-mapa-tactico');
+            svg.innerHTML = "";
+
+            let contornosCuerpo = "";
+            let puntosCalientes = "";
+
+            if (nombre.includes("Zaragoza")) {
+                // Dibujo fiel del Río Ebro serpenteante azul neón
+                contornosCuerpo = `
+                    <path d="M-10,95 Q70,70 130,125 T240,75 T320,105 L320,140 Q240,105 175,155 T70,105 T-10,130 Z" fill="#021426" stroke="#06b6d4" stroke-width="2.5"/>
+                    <path d="M-10,112 Q70,87 130,140 T240,90 T320,122" fill="none" stroke="#22d3ee" stroke-width="0.5" stroke-dasharray="4,4"/>
+                `;
+                puntosCalientes = `
+                    <g transform="translate(100, 120)"><circle cx="0" cy="0" r="4.5" fill="#f59e0b" class="animate-pulse"/><text x="8" y="3" fill="#94a3b8" font-size="7" font-family="monospace">ISLA DE GRAVA</text></g>
+                    <g transform="translate(230, 85)"><circle cx="0" cy="0" r="4.5" fill="#f59e0b" class="animate-pulse"/><text x="8" y="3" fill="#94a3b8" font-size="7" font-family="monospace">POZA RECODO</text></g>
+                `;
+            } else if (nombre.includes("Cosuenda")) {
+                // Balsa de contornos geométricos regulares planos
+                contornosCuerpo = `
+                    <polygon points="40,35 260,35 275,170 25,170" fill="#01162b" stroke="#06b6d4" stroke-width="2.5"/>
+                    <line x1="25" y1="170" x2="275" y2="170" stroke="#f43f5e" stroke-width="2"/>
+                `;
+                puntosCalientes = `
+                    <g transform="translate(150, 160)"><circle cx="0" cy="0" r="4.5" fill="#f59e0b" class="animate-pulse"/><text x="-45" y="-10" fill="#94a3b8" font-size="7" font-family="monospace">MURO DE CONTENCIÓN</text></g>
+                `;
+            } else {
+                // Embalses / Pantanos de Aragón de contorno ancho azul profundo
+                contornosCuerpo = `
+                    <path d="M15,110 Q80,25 155,85 T285,45 L295,155 Q215,175 145,125 T10,145 Z" fill="#01162b" stroke="#06b6d4" stroke-width="2.5"/>
+                    <path d="M155,85 Q205,125 285,95" fill="none" stroke="#22d3ee" stroke-width="0.75" stroke-dasharray="4,4"/>
+                `;
+                puntosCalientes = `
+                    <g transform="translate(75, 75)"><circle cx="0" cy="0" r="4.5" fill="#f59e0b" class="animate-pulse"/><text x="8" y="3" fill="#94a3b8" font-size="7" font-family="monospace">ENTRADA RÉCULA</text></g>
+                    <g transform="translate(210, 115)"><circle cx="0" cy="0" r="4.5" fill="#f59e0b" class="animate-pulse"/><text x="8" y="3" fill="#94a3b8" font-size="7" font-family="monospace">CAUCE ANTIGUO</text></g>
+                `;
+            }
+
+            svg.innerHTML = `
+                <path d="M 0,185 Q 70,165 150,195 T 300,175" fill="none" stroke="#1e293b" stroke-width="1"/>
+                <path d="M 0,25 Q 100,45 200,15 T 300,35" fill="none" stroke="#1e293b" stroke-width="1"/>
+                ${contornosCuerpo}
+                ${puntosCalientes}
+            `;
+        }
+
+        function cargarPuntoCalibrado(lat, lng, nombre, tipoAgua) {
+            entornoDetectado = tipoAgua; ubicacionNombre = nombre;
+
+            document.getElementById('txt-geo-coor').innerText = `${lat.toFixed(3)}, ${lng.toFixed(3)}`;
+            document.getElementById('txt-geo-nombre').innerText = nombre;
+
+            const badge = document.getElementById('txt-entorno-detectado');
+            if (nombre.includes("Cosuenda")) {
+                badge.innerText = "🧱 BALSA / COSUENDA";
+                badge.className = "text-xs font-black text-emerald-400 tracking-wide block text-center";
+                document.getElementById('txt-turbidez').innerText = "Vegetal (1.2m)";
+            } else if (tipoAgua === "Río") {
+                badge.innerText = "🌊 TRAMO FLUVIAL";
+                badge.className = "text-xs font-black text-sky-400 tracking-wide block text-center";
+                document.getElementById('txt-turbidez').innerText = "Turbio (0.7m)";
+            } else {
+                badge.innerText = "🏔️ EMBALSE GENERAL";
+                badge.className = "text-xs font-black text-teal-400 tracking-wide block text-center";
+                document.getElementById('txt-turbidez').innerText = "Claro (2.4m)";
+            }
+
+            const calculo = Math.abs(Math.sin(lat) * Math.cos(lng));
+            presionActual = Math.floor(1009 + (calculo * 14));
+            
+            document.getElementById('txt-presion').innerText = `${presionActual} hPa`;
+            document.getElementById('txt-temp').innerText = `${Math.floor(16 + (calculo * 8))}°C`;
+            document.getElementById('txt-viento').innerText = `${Math.floor(5 + (calculo * 25))} km/h`;
+            document.getElementById('val-termoclina').innerText = `| 🌡️ Temp: ${(16 + (calculo * 5)).toFixed(1)}°C`;
+
+            // Renderizar mapa azul y negro limpio
+            renderizarMapaFiel(nombre, calculo);
+            renderizarMatrizEspecies();
+        }
+
+        function renderizarMatrizEspecies() {
+            const grid = document.getElementById('grid-especies');
+            grid.innerHTML = "";
+            let idFiltro = "Zaragoza";
+            if (ubicacionNombre.includes("Caspe")) idFiltro = "Caspe";
+            if (ubicacionNombre.includes("Mequinenza")) idFiltro = "Mequinenza";
+            if (ubicacionNombre.includes("Mezalocha")) idFiltro = "Mezalocha";
+            if (ubicacionNombre.includes("Tosos")) idFiltro = "Tosos";
+            if (ubicacionNombre.includes("Cosuenda")) idFiltro = "Cosuenda";
+
+            for (const key in DATA_PESCA) {
+                const pez = DATA_PESCA[key];
+                if (pez.habitats.includes(idFiltro)) {
+                    const card = document.createElement('button');
+                    card.onclick = () => abrirConsolaEspecie(key, idFiltro);
+                    card.className = `p-2.5 rounded-xl border flex flex-col items-center justify-between text-center transition-all cursor-pointer h-16 ${pez.colorClass}`;
+                    card.innerHTML = `
+                        <div class="w-8 h-5 flex items-center justify-center text-slate-900 drop-shadow-[0_2px_3px_rgba(0,255,240,0.4)]">${CONTORNOS_SVG[key] || CONTORNOS_SVG['carpa']}</div>
+                        <span class="text-[9px] font-black block uppercase tracking-wide truncate w-full text-white">${pez.nombre}</span>
+                    `;
+                    grid.appendChild(card);
+                }
+            }
+            document.getElementById('reporte-contenedor').classList.add('hidden');
+        }
+
+        function construirAparejoRealista(capa, color, especieKey) {
+            const svg = document.getElementById('svg-aparejo');
+            svg.innerHTML = ""; 
+
+            let html = `
+                <defs>
+                    <linearGradient id="grad-plomo" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#64748b"/><stop offset="100%" stop-color="#1e293b"/></linearGradient>
+                    <linearGradient id="grad-vinilo" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="${color}"/><stop offset="100%" stop-color="#ffffff" stop-opacity="0.3"/></linearGradient>
+                    <linearGradient id="grad-corcho" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#ea580c"/><stop offset="100%" stop-color="#c2410c"/></linearGradient>
+                </defs>
+                <line x1="10" y1="195" x2="150" y2="195" stroke="#334155" stroke-width="2" stroke-dasharray="4,2"/>
+                <path d="M40,-10 L80,30 L80,100" fill="none" stroke="#64748b" stroke-width="1" stroke-dasharray="1,1" />
+            `;
+
+            if (especieKey === "lucioperca") {
+                html += `
+                    <line x1="40" y1="10" x2="80" y2="140" stroke="#94a3b8" stroke-width="1.2"/>
+                    <g transform="translate(80,140)">
+                        <circle cx="0" cy="0" r="6" fill="url(#grad-plomo)"/>
+                        <circle cx="-1" cy="-1" r="1.5" fill="#000000"/>
+                        <circle cx="0" cy="-6" r="1.5" fill="none" stroke="#94a3b8" stroke-width="1"/>
+                        <g transform="rotate(10)">
+                            <path d="M5,0 Q25,-12 55,-3 Q68,-1 75,-8 L73,3 Q65,1 55,4 Q25,8 5,0 Z" fill="url(#grad-vinilo)"/>
+                            <path d="M75,-8 Q80,-4 78,3 L73,3 Z" fill="${color}"/>
+                            <path d="M0,0 L20,-5 Q35,-9 40,0 L40,-5 Q40,-10 36,-10" fill="none" stroke="#cbd5e1" stroke-width="1.5" stroke-linecap="round"/>
+                        </g>
+                    </g>
+                `;
+            } else if (especieKey === "siluro") {
+                html += `
+                    <line x1="40" y1="10" x2="70" y2="95" stroke="#ef4444" stroke-width="2"/>
+                    <path d="M70,95 C62,115 62,130 70,135 C78,130 78,115 70,95 Z" fill="url(#grad-plomo)"/>
+                    <line x1="70" y1="141" x2="95" y2="170" stroke="#cbd5e1" stroke-width="2.5"/>
+                    <g transform="translate(95,170) rotate(5)">
+                        <path d="M0,0 Q25,-18 60,-5 Q75,-2 85,-12 L82,2 Z" fill="#475569"/>
+                        <path d="M85,-12 Q90,-5 88,2 L82,2 Z" fill="#ef4444"/>
+                        <g transform="translate(35,5)">
+                            <line x1="0" y1="0" x2="0" y2="12" stroke="#94a3b8" stroke-width="1.8"/>
+                            <path d="M-6,12 Q0,17 6,12" fill="none" stroke="#94a3b8" stroke-width="1.8"/>
+                        </g>
+                    </g>
+                `;
+            } else if (capa === "superficie") {
+                html += `
+                    <ellipse cx="80" cy="50" rx="7" ry="15" fill="url(#grad-corcho)"/>
+                    <line x1="80" y1="65" x2="80" y2="130" stroke="#94a3b8" stroke-width="1"/>
+                    <path d="M80,130 Q82,138 78,138" fill="none" stroke="#94a3b8" stroke-width="1.2"/>
+                    <path d="M79,136 Q85,133 88,138" fill="none" stroke="#fef08a" stroke-width="3"/>
+                `;
+            } else if (capa === "medias") {
+                html += `
+                    <g transform="translate(73, 86) rotate(15)">
+                        <path d="M0,0 Q20,-12 50,-2 Q60,-1 65,-4 L63,4 Z" fill="url(#grad-vinilo)"/>
+                        <g transform="translate(22, 4)"><line x1="0" y1="0" x2="0" y2="10" stroke="#94a3b8" stroke-width="1"/></g>
+                    </g>
+                `;
+            } else {
+                html += `
+                    <rect x="58" y="125" width="4" height="12" rx="1.5" fill="#1e293b"/>
+                    <path d="M60,135 C54,155 52,175 60,175 Z" fill="url(#grad-plomo)"/>
+                    <path d="M60,132 Q85,145 105,178" fill="none" stroke="#5f6c3d" stroke-width="1.5"/>
+                    <g transform="translate(105,178) rotate(-20)">
+                        <path d="M0,0 L2,10 Q4,16 -2,18 Z" fill="none" stroke="#334155" stroke-width="1.5"/>
+                        <circle cx="18" cy="14" r="7" fill="${color}"/>
+                    </g>
+                `;
+            }
+            svg.innerHTML = html;
+        }
+
+        function abrirConsolaEspecie(key, idFiltro) {
+            const pez = DATA_PESCA[key];
+            const txtAct = document.getElementById('rep-actividad-texto');
+            
+            txtAct.innerText = presionActual > 1015 ? "🎯 RECELOSA" : "⚡ ALTA ACTIVIDAD";
+            txtAct.className = presionActual > 1015 ? "text-[10px] font-mono font-bold text-amber-400 block px-2 py-0.5 rounded bg-slate-950 border border-slate-800" : "text-[10px] font-mono font-bold text-emerald-400 block px-2 py-0.5 rounded bg-slate-950 border border-slate-800";
+
+            document.getElementById('rep-especie-titulo').innerText = `OBJETIVO: ${pez.nombre}`;
+            document.getElementById('rep-subtitulo').innerText = `Taxonomía: ${pez.cientifico}`;
+
+            if (idFiltro === "Cosuenda") {
+                document.getElementById('rep-zona-foco').innerText = `Ubicación óptima: En las hierbas sumergidas pegadas a la pared de contención de la balsa.`;
+            } else {
+                document.getElementById('rep-zona-foco').innerText = `Ubicación óptima: ${entornoDetectado === "Río" ? pez.focoRio : pez.focoPantano}`;
+            }
+
+            let ceboConfig = idFiltro === "Cosuenda" && pez.configSabores.cosuenda ? pez.configSabores.cosuenda : (entornoDetectado === "Río" && pez.configSabores.rio ? pez.configSabores.rio : (pez.configSabores.grandesMases || pez.configSabores.pequenosMases));
+            
+            document.getElementById('rep-lure-nombre').innerText = ceboConfig.titulo;
+            document.getElementById('rep-lure-desc').innerText = ceboConfig.desc;
+            document.getElementById('rep-lure-alt').innerText = ceboConfig.alt;
+
+            document.getElementById('rep-tech-cana').innerText = pez.cana;
+            document.getElementById('rep-tech-carrete').innerText = pez.carrete;
+            document.getElementById('rep-tech-linea').innerText = pez.linea;
+            document.getElementById('rep-tech-bajo').innerText = pez.bajo;
+
+            ["superficie", "medias", "fondo"].forEach(c => { document.getElementById(`capa-${c}`).className = "p-1 border border-slate-800/40 rounded flex justify-between items-center bg-slate-900/40 text-slate-500"; });
+            document.getElementById('sonar-icon-sup').innerHTML = ""; document.getElementById('sonar-icon-med').innerHTML = ""; document.getElementById('sonar-icon-fon').innerHTML = "";
+
+            let destinoIcono = pez.capa === "superficie" ? "sonar-icon-sup" : (pez.capa === "fondo" ? "sonar-icon-fon" : "sonar-icon-med");
+            document.getElementById(`capa-${pez.capa}`).className = "p-1 border border-cyan-500/30 rounded flex justify-between items-center bg-cyan-950/20 text-cyan-400 font-bold";
+            document.getElementById(destinoIcono).innerHTML = `<div class="w-5 h-4 text-cyan-400 stroke-cyan-500">${CONTORNOS_SVG[key]}</div>`;
+            
+            construirAparejoRealista(pez.capa, pez.colorRig, key);
+            document.getElementById('reporte-contenedor').classList.remove('hidden');
+        }
+
+        function mostrarVentana(target) {
+            const vMapa = document.getElementById('ventana-mapa');
+            const vPokedex = document.getElementById('ventana-pokedex');
+            const bMapa = document.getElementById('btn-nav-mapa');
+            const bPokedex = document.getElementById('btn-nav-pokedex');
+
+            if (target === 'pokedex') {
+                vMapa.classList.add('hidden'); vPokedex.classList.remove('hidden');
+                bMapa.className = "flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold px-3 py-2.5 rounded-xl transition-all";
+                bPokedex.className = "flex-1 bg-cyan-500 text-slate-950 text-xs font-bold px-3 py-2.5 rounded-xl transition-all";
+                renderizarPokedex();
+            } else {
+                vPokedex.classList.add('hidden'); vMapa.classList.remove('hidden');
+                bPokedex.className = "flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold px-3 py-2.5 rounded-xl transition-all";
+                bMapa.className = "flex-1 bg-cyan-500 text-slate-950 text-xs font-bold px-3 py-2.5 rounded-xl transition-all";
+            }
         }
 
         async function abrirCamara() {
-            document.getElementById('modal-camara').classList.remove('hidden');
+            const modal = document.getElementById('modal-camara');
+            const video = document.getElementById('video-camara');
+            const canvas = document.getElementById('canvas-foto');
+            
+            modal.classList.remove('hidden'); video.classList.remove('hidden');
+            canvas.classList.add('hidden');
+            document.getElementById('controles-disparo').classList.remove('hidden');
+            document.getElementById('formulario-captura').classList.add('hidden');
             document.getElementById('ins-lugar').value = ubicacionNombre;
-            const select = document.getElementById('ins-especie');
-            select.innerHTML = Object.entries(DATA_PESCA).map(([k,v]) => `<option value="${k}">${v.nombre}</option>`).join('');
+
+            if (streamCamara) { streamCamara.getTracks().forEach(track => track.stop()); }
             try {
-                streamCamara = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-                document.getElementById('video-camara').srcObject = streamCamara;
-            } catch(e) { alert("Cámara no disponible"); }
+                streamCamara = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { exact: "environment" } }, audio: false });
+            } catch (err) {
+                try { streamCamara = await navigator.mediaDevices.getUserMedia({ video: true, audio: false }); } catch(e) {
+                    alert("Cámara no disponible."); cerrarCamara();
+                }
+            }
+            if (streamCamara && video) video.srcObject = streamCamara;
         }
 
         function capturarFoto() {
-            const video = document.getElementById('video-camara'), canvas = document.getElementById('canvas-foto');
+            const video = document.getElementById('video-camara');
+            const canvas = document.getElementById('canvas-foto');
+            if (!video || video.videoWidth === 0) return;
+
             canvas.width = video.videoWidth; canvas.height = video.videoHeight;
-            canvas.getContext('2d').drawImage(video, 0, 0);
+            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
             fotoBase64 = canvas.toDataURL('image/jpeg', 0.6);
+
             video.classList.add('hidden'); canvas.classList.remove('hidden');
             document.getElementById('controles-disparo').classList.add('hidden');
             document.getElementById('formulario-captura').classList.remove('hidden');
+            if (streamCamara) { streamCamara.getTracks().forEach(track => track.stop()); }
         }
 
         function guardarCaptura() {
-            let hist = JSON.parse(localStorage.getItem('fishing_pokedex') || '[]');
-            hist.push({ id: Date.now(), especie: document.getElementById('ins-especie').value, lugar: ubicacionNombre, foto: fotoBase64 });
-            localStorage.setItem('fishing_pokedex', JSON.stringify(hist));
+            const especieKey = document.getElementById('ins-especie').value;
+            const lugarVal = document.getElementById('ins-lugar').value || "Punto de Pesca";
+            if(!fotoBase64) return;
+
+            let localHistory = JSON.parse(localStorage.getItem('fishing_pokedex')) || [];
+            localHistory.push({ id: Date.now(), especie: especieKey, lugar: lugarVal, fecha: new Date().toLocaleDateString('es-ES'), foto: fotoBase64 });
+            localStorage.setItem('fishing_pokedex', JSON.stringify(localHistory));
+
+            fotoBase64 = null;
             document.getElementById('modal-camara').classList.add('hidden');
             renderizarPokedex();
         }
 
         function renderizarPokedex() {
             const grid = document.getElementById('grid-pokedex');
-            const hist = JSON.parse(localStorage.getItem('fishing_pokedex') || '[]');
-            document.getElementById('pokedex-contador').innerText = hist.length;
-            grid.innerHTML = hist.map(c => `
-                <div class="bg-slate-900 border border-slate-800 p-2 rounded-xl">
-                    <img src="${c.foto}" class="w-full aspect-square object-cover rounded-lg mb-2">
-                    <div class="flex justify-between items-center">
-                        <h4 class="text-[11px] font-black text-white">${DATA_PESCA[c.especie]?.nombre}</h4>
-                        <div class="w-6 h-6 text-slate-700">${CONTORNOS_SVG[c.especie] || ''}</div>
+            if (!grid) return; grid.innerHTML = "";
+            const historial = JSON.parse(localStorage.getItem('fishing_pokedex')) || [];
+            
+            document.getElementById('pokedex-contador').innerText = historial.length;
+
+            if(historial.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center text-slate-600 py-12 text-xs font-mono uppercase tracking-widest">SIN CAPTURAS REGISTRADAS</div>`;
+                return;
+            }
+
+            historial.slice().reverse().forEach(cap => {
+                const pezInfo = DATA_PESCA[cap.especie] || { nombre: "Especie", colorClass: "text-slate-400" };
+                const card = document.createElement('div');
+                card.className = "bg-slate-900 border border-slate-800 p-2.5 rounded-2xl flex flex-col justify-between shadow-md relative group";
+                card.innerHTML = `
+                    <div class="relative aspect-square w-full bg-slate-950 rounded-xl overflow-hidden mb-2 border border-slate-800">
+                        <img src="${cap.foto}" class="w-full h-full object-cover" />
+                        <span class="absolute bottom-1 right-1 text-[8px] bg-black/80 px-1.5 py-0.5 font-mono text-slate-400 rounded">${cap.fecha}</span>
                     </div>
-                </div>
-            `).join('');
+                    <div class="px-1 flex justify-between items-center gap-1">
+                        <div>
+                            <h4 class="text-[11px] font-black text-white uppercase tracking-wide truncate">${pezInfo.nombre}</h4>
+                            <p class="text-[9px] text-slate-500 truncate font-mono">📍 ${cap.lugar}</p>
+                        </div>
+                        <div class="w-6 h-4 text-slate-800">${CONTORNOS_SVG[cap.especie] || ''}</div>
+                    </div>
+                    <button onclick="eliminarCaptura(${cap.id})" class="absolute top-4 right-4 bg-red-600/90 text-white w-5 h-5 flex items-center justify-center rounded shadow-lg text-xs font-mono">✕</button>
+                `;
+                grid.appendChild(card);
+            });
         }
 
-        window.onload = () => {
-            inicializarMapa();
-            seleccionarTramoPreset('ebro');
+        function eliminarCaptura(id) {
+            if(!confirm("¿Eliminar registro de captura?")) return;
+            let localHistory = JSON.parse(localStorage.getItem('fishing_pokedex')) || [];
+            localStorage.setItem('fishing_pokedex', JSON.stringify(localHistory.filter(cap => cap.id !== id)));
             renderizarPokedex();
-        };
+        }
+
+        function repetirFoto() { abrirCamara(); }
+        function cerrarCamara() {
+            document.getElementById('modal-camara').classList.add('hidden');
+            if (streamCamara) { streamCamara.getTracks().forEach(track => track.stop()); streamCamara = null; }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderizarPokedex();
+            seleccionarTramoPreset('ebro');
+        });
     </script>
 </body>
 </html>
