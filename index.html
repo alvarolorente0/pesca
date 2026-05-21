@@ -4,23 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sónar de Pesca Profesional - Aragón</title>
-    <!-- Tailwind CSS para Estilos Rápidos -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <!-- Leaflet Map Engine -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
-        #map { height: 280px; width: 100%; border-radius: 1rem; }
+        #map { height: 290px; width: 100%; border-radius: 1rem; }
         .shadow-glow { box-shadow: 0 0 15px rgba(6, 182, 212, 0.15); }
     </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen font-sans selection:bg-cyan-500 selection:text-slate-950">
 
     <!-- CONTENEDOR PRINCIPAL INTERFAZ -->
-    <div class="max-w-md mx-auto p-4 pb-24 space-y-4">
+    <div class="max-w-md mx-auto p-4 pb-12 space-y-4">
         
         <!-- CABECERA TELEMETRÍA -->
-        <header class="flex justify-between items-center bg-slate-900/80 border border-slate-800 p-3 rounded-2xl backdrop-blur">
+        <header class="flex justify-between items-center bg-slate-900/90 border border-slate-800 p-3 rounded-2xl backdrop-blur">
             <div>
                 <h1 class="text-sm font-black tracking-wider text-cyan-400 uppercase">SÓNAR BIOLÓGICO</h1>
                 <p id="txt-geo-nombre" class="text-[11px] text-slate-400 font-mono">Cargando estación...</p>
@@ -31,10 +31,10 @@
             </div>
         </header>
 
-        <!-- NAVEGACIÓN -->
+        <!-- NAVEGACIÓN PRINCIPAL -->
         <nav class="flex gap-2">
-            <button id="btn-nav-mapa" onclick="mostrarVentana('mapa')" class="flex-1 bg-cyan-500 text-slate-950 text-xs font-bold px-3 py-2 rounded-lg transition-all">🗺️ RADAR / MAPA</button>
-            <button id="btn-nav-pokedex" onclick="mostrarVentana('pokedex')" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold px-3 py-2 rounded-lg transition-all">📋 EXPEDICIONES (<span id="pokedex-contador">0 / 9</span>)</button>
+            <button id="btn-nav-mapa" onclick="mostrarVentana('mapa')" class="flex-1 bg-cyan-500 text-slate-950 text-xs font-bold px-3 py-2.5 rounded-xl transition-all">🗺️ RADAR / MAPA</button>
+            <button id="btn-nav-pokedex" onclick="mostrarVentana('pokedex')" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold px-3 py-2.5 rounded-xl transition-all">📸 CAPTURAS (<span id="pokedex-contador">0</span>)</button>
         </nav>
 
         <!-- SECCIÓN VISTA RADAR / MAPA -->
@@ -84,7 +84,7 @@
                 </div>
             </div>
 
-            <!-- INFORMES CONSOLA DE CAPTURA (OCULTO POR DEFECTO) -->
+            <!-- INFORMES CONSOLA DE CAPTURA -->
             <div id="reporte-contenedor" class="hidden bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-4 shadow-glow">
                 <div class="flex justify-between items-start border-b border-slate-800 pb-3">
                     <div>
@@ -109,11 +109,11 @@
                         <span id="sonar-capa-activa" class="text-[7px] text-slate-500 uppercase mt-1 text-center tracking-tighter"></span>
                     </div>
 
-                    <!-- VISUALIZACIÓN EXPERTA DE APAREJO COMPLETO REALISTA -->
+                    <!-- VISUALIZACIÓN EXPERTA DE APAREJO -->
                     <div class="col-span-2 bg-slate-950 rounded-xl border border-slate-800 p-2 flex items-center justify-center relative overflow-hidden">
                         <span class="absolute top-1 left-2 text-[8px] font-mono text-slate-500">ESQUEMA TÉCNICO DE MONTAJE</span>
                         <svg id="svg-aparejo" class="w-full h-32" viewBox="0 0 160 200">
-                            <!-- Contenido dinámico renderizado con alto realismo vectorial -->
+                            <!-- Contenido dinámico renderizado vectorialmente -->
                         </svg>
                         <span id="val-termoclina" class="absolute bottom-1 right-2 text-[8px] font-mono text-cyan-500"></span>
                     </div>
@@ -137,28 +137,21 @@
                     <div><span class="text-slate-500 block text-[9px]">CARRETE:</span><span id="rep-tech-carrete" class="text-slate-300"></span></div>
                     <div><span class="text-slate-500 block text-[9px]">BAJO DE LÍNEA:</span><span id="rep-tech-bajo" class="text-slate-300"></span></div>
                 </div>
-
-                <!-- BOTÓN DISPARADOR CÁMARA ORILLA -->
-                <button onclick="abrirCamara()" class="w-full bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-500 hover:to-teal-500 text-slate-950 font-black text-xs py-3 rounded-xl transition-all tracking-wider shadow-lg">
-                    📷 REGISTRAR CAPTURA EN ESTA ORILLA
-                </button>
             </div>
         </div>
 
-        <!-- SECCIÓN HISTORIAL EXPEDICIONES / POKÉDEX -->
+        <!-- SECCIÓN CAPTURAS (HISTORIAL LOGS) -->
         <div id="ventana-pokedex" class="space-y-4 hidden">
+            <!-- Botón exclusivo para abrir cámara (Solo visible en esta sección) -->
+            <button onclick="abrirCamara()" class="w-full bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-500 hover:to-teal-500 text-slate-950 font-black text-xs py-3.5 rounded-xl transition-all tracking-wider shadow-lg flex items-center justify-center gap-2">
+                📸 ABRIR CÁMARA / REGISTRAR NUEVA CAPTURA
+            </button>
+
             <div id="grid-pokedex" class="grid grid-cols-2 gap-3">
-                <!-- Tarjetas de historial cargadas dinámicamente -->
+                <!-- Tarjetas de capturas cargadas dinámicamente -->
             </div>
         </div>
 
-    </div>
-
-    <!-- BOTÓN DE ACCESO RÁPIDO FOOTER -->
-    <div class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
-        <button onclick="abrirCamara()" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 w-14 h-14 rounded-full flex items-center justify-center shadow-2xl transition-transform active:scale-95 border-4 border-slate-950 font-mono text-xl">
-            📸
-        </button>
     </div>
 
     <!-- MODAL INTEGRADO HARDWARE CÁMARA -->
@@ -203,15 +196,15 @@
                 </div>
                 <div class="flex gap-2 pt-2">
                     <button onclick="repetirFoto()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-xs font-bold py-2.5 rounded-xl transition-all">REPETIR FOTO</button>
-                    <button onclick="guardarCaptura()" class="flex-1 bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-black py-2.5 rounded-xl transition-all">CONSOLIDAR LOG</button>
+                    <button onclick="guardarCaptura()" class="flex-1 bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-black py-2.5 rounded-xl transition-all">CONSOLIDAR CAPTURA</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- ARCHIVO LOGÍSTICO COMPLETO JAVASCRIPT -->
+    <!-- SCRIPT DE LOGÍSTICA GEOGRÁFICA Y GRÁFICOS -->
     <script>
-        // --- PRESETS DE PUNTOS CALIBRADOS (AÑADIDO COSUENDA) ---
+        // PRESETS GEOGRÁFICOS
         const PRESETS_UBICACION = {
             ebro: { lat: 41.6575, lng: -0.8762, nombre: "Río Ebro (Zaragoza)", tipo: "Río" },
             caspe: { lat: 41.2952, lng: -0.0412, nombre: "Caspe (Mar de Aragón)", tipo: "Pantano" },
@@ -221,20 +214,20 @@
             tosos: { lat: 41.3321, lng: -1.0215, nombre: "Embalse de Tosos", tipo: "Pantano" }
         };
 
-        // --- CONTORNOS VECTORIALES COMPACTOS ---
+        // SILUETAS BIOLÓGICAS ESTILIZADAS (Sombras realistas de Sónar de Arco)
         const CONTORNOS_SVG = {
-            carpa: `<svg viewBox="0 0 512 512" class="w-full h-full fill-current"><path d="M493.6 220.3c-23.7-27.1-59-45.3-94-55.5-24.6-7.2-50.5-11-76-11.8 4.6-11 9.9-21.6 15.8-31.5 5.5-9.1 1.6-21-8.2-25.4-8.8-3.9-19.1-.5-23.8 7.9-11 19.3-19.7 40.4-26.1 62.5-43 3.8-84.6 16.1-121.7 37.1l-44.5-29.6c-7.9-5.3-18.4-4-24.8 3.1L67 202.8C28.4 220.1 2 248.6 0 274c1.2 16.3 14.2 32.5 37.1 46.2l39 23.4c6.2 3.7 14.1 3.2 19.8-1.3l42.6-34c28 12.1 58.2 19.7 89.2 22.8-4.7 18.2-11.8 35.4-21.3 51-5.1 8.4-2.6 19.4 5.6 24.7 3.5 2.3 7.5 3.4 11.4 3.4 5.3 0 10.5-2.1 14.3-6.2 13-14.1 23.3-30.2 30.6-47.5 25.1.3 50.1-2.4 74.5-8.2 41.3-9.9 82.3-30.2 110.1-59.5 29-30.5 44-67.6 45-88.5.5-15.1-4.7-28.5-14.3-39.5zM384 224c-13.2 0-24-10.8-24-24s10.8-24 24-24 24 10.8 24 24-10.8 24-24 24z"/></svg>`,
-            siluro: `<svg viewBox="0 0 512 512" class="w-full h-full fill-current"><path d="M496 224c-20-15-50-25-80-28-40-3-80 5-115 20-30 12-60 12-90 0-40-15-85-18-125-5l-40-30c-8-6-20-4-26 4L4 206c-8 10-6 25 4 33l32 24c-2 25 5 50 20 72l-24 24c-8 8-8 20 0 28l32 32c8 8 20 8 28 0l24-24c30 20 65 30 100 28 40-2 80-15 112-38 25-18 55-22 82-12 35 12 72 15 108 5 20-5 36-18 44-36 10-22 6-48-12-64zM128 256c-8.8 0-16-7.2-16-16s7.2-16 16-16 16 7.2 16 16-7.2 16-16 16z"/></svg>`,
-            bass: `<svg viewBox="0 0 512 512" class="w-full h-full fill-current"><path d="M496 192c-15-20-40-35-70-42-20-5-42-6-64-5 5-15 8-30 8-45 0-10-8-18-18-18-40 0-78 16-106 43-42-4-84 6-120 28L70 120c-8-6-19-4-25 4L8 176c-12 14-10 35 4 47l38 32c-6 32-2 66 12 96l-32 32c-8 8-8 20 0 28l48 48c8 8 20 8 28 0l36-36c34 16 72 23 110 20-2 15-8 30-18 42-7 8-5 21 4 27 3 2 7 3 10 3 6 0 12-3 15-8 20-25 31-56 33-88 24-4 48-12 70-24 45-25 80-64 96-112 18-6 34-18 44-33 10-14 10-33 0-48zM336 208c-13.2 0-24-10.8-24-24s10.8-24 24-24 24 10.8 24 24-10.8 24-24 24z"/></svg>`,
-            lucioperca: `<svg viewBox="0 0 512 512" class="w-full h-full fill-current"><path d="M506.2 208.3c-12.5-18.4-32.6-32.3-56.5-39.4-18.2-5.4-37.5-7.2-56.8-5.3 2.1-12.4 2.8-24.9 2-37.3-.8-11.2-10.4-19.8-21.7-19-32.5 2.2-63.1 16.5-85.3 39.7-36.4-.3-72.7 10.5-102.6 30.8L144 148c-7.8-6.1-19-4.8-25.2 3l-34.5 43.1C51.5 210.3 22.4 235 8.2 258.4c-9.5 15.6-4.2 35.8 11.5 45.1l32.1 19.2c-1.4 28.5 4.8 56.9 18.2 82.4l-26.4 26.4c-7.8 7.8-7.8 20.5 0 28.3l38.2 38.2c7.8 7.8 20.5 7.8 28.3 0l29.4-29.4c30.2 12.4 62.7 17.5 95.1 14.8-2.1 13.5-7.3 26.5-15.4 37.6-6.6 9.1-4.6 21.8 4.5 28.4 3.4 2.5 7.4 3.7 11.4 3.7 6.4 0 12.7-3.1 16.5-8.8 16.2-24.2 23.4-53.1 22.1-82.5 21.3-4.8 42-13.7 60.8-26.3 38.3-25.6 66.2-62.8 77.2-105.4 15.4-7.2 28.7-19.1 36.8-33.9 8.2-14.8 7.1-33-.8-46.8zM312 184c-11 0-20-9-20-20s9-20 20-20 20 9 20 20-9 20-20 20z"/></svg>`,
-            lucio: `<svg viewBox="0 0 512 512" class="w-full h-full fill-current"><path d="M508.8 184.2c-8.4-15.3-23.4-27.4-42.3-34.2-16.4-5.9-34.1-8.5-51.7-7.7.4-9.3-.5-18.7-2.7-27.8-2.6-10.9-13.4-17.7-24.3-15.1-28.7 6.8-54.4 23.4-72 46.8-33.8-3.4-68 3.5-97.4 19.8l-44-24.4c-8.4-4.7-19.1-1.8-24.1 6.4L114 194c-31.4 13.4-56.9 34.6-70.4 55.4-8.8 13.6-5.4 31.7 7.8 41.2l28.4 20.4c-4.4 26.4.2 53.4 11.4 77.8l-24.8 22c-7.4 6.6-8.2 18-.1 25.6l33.8 31.8c7.6 7.2 19.4 6.9 26.6-.5l25.4-25.4c27.8 13.4 58.2 20.4 88.8 20.4.4 0 .8 0 1.2 0-3.3 12.4-9.8 23.7-18.8 33-7.4 7.6-6.9 20 .7 27.1 3.6 3.4 8.2 5.1 12.8 5.1 5.3 0 10.6-2.2 14.4-6.4 16.4-18.4 26.4-41.8 29.4-66.2 19.8-3.1 39.2-10.4 57.2-21.4 35.8-21.8 63.8-54.8 77.4-94 14.8-5.3 27.8-15.2 36.4-28.4 8.8-13.4 9-30.1 2-43.1zM280 168c-9.9 0-18-8.1-18-18s8.1-18 18-18 18 8.1 18 18-8.1 18-18 18z"/></svg>`,
-            alburno: `<svg viewBox="0 0 512 512" class="w-full h-full fill-current"><path d="M510.4 220.2c-4.2-18.2-16.4-33.4-34.2-42.3-15.4-7.8-32.6-11.9-49.8-11.9-6.4 0-12.8.6-19.2 1.8 1.4-11-.6-22.1-5.9-32-5-9.3-16.3-13.4-25.9-9.3-25.2 10.8-46.3 29.4-59.4 52.5-31.4-8.4-64.8-7.8-95.8 1.8L186 154c-7.2-6.4-18.2-6.1-25.1.8l-40.3 40.3c-28.5 10.4-53.1 27.4-68 46.2-10.4 13.1-8.4 32 4.4 42.8l26.2 22c-6.4 25.1-4.2 51.4 6.2 75.1l-24.2 24.2c-7.8 7.8-7.8 20.5 0 28.3l31.2 31.2c7.8 7.8 20.5 7.8 28.3 0l24.6-24.6c26.2 11.4 54.4 17.5 83.1 17.5 2.1 0 4.2 0 6.3-.1-3.6 11.4-10.8 21.3-20.3 28.8-8.4 6.6-9.7 19-.3 27.1 3.7 3.2 8.3 4.8 12.9 4.8 5.4 0 10.8-2.2 14.7-6.5 17.5-19.2 27.2-44.4 28.3-70.3 18.2-4.2 35.8-12.4 51.4-24.2 32.6-24.6 56-59.4 64.8-101 13.4-6.4 24.6-16.4 32-28.8 8.1-13.5 7.5-30.6-.7-43.2zM232 192c-8.8 0-16-7.2-16-16s7.2-16 16-16 16 7.2 16 16-7.2 16-16 16z"/></svg>`,
-            percasol: `<svg viewBox="0 0 512 512" class="w-full h-full fill-current"><path d="M490.6 178.3c-18-24.6-47-40-78.6-45.3-22.3-3.7-45.2-1.8-66.8 5.6 6.8-14.3 10.2-29.9 9.9-45.6-.2-10.6-9.1-19-19.7-18.7-39.8 1.1-76.3 22-99.7 54.8-41.5-12.2-85.7-9.5-125.4 7.6l-43-39.2c-7.8-7.1-20-6.1-26.6 2.2L7 143.8c-10 12.6-6.6 31.2 7.4 39.5l34.8 20.8c-12.6 30.2-14.2 63.9-4.8 94.9l-33.8 28.3c-8.2 6.9-9.3 19.1-2.4 27.3l42.4 50.2c6.9 8.2 19.1 9.3 27.3 2.4l33.5-28.1c31.4 20.4 68.7 31.9 106.8 32.5-3.6 14.6-11.4 27.8-22.5 37.8-8.1 7.3-8.8 19.8-1.5 27.9 3.7 4.1 8.9 6.3 14.2 6.3 4.9 0 9.8-1.9 13.7-5.6 20.8-19.8 33.4-46 36.8-74 23.4-7.4 45.4-19.8 64.6-36.4 40.2-34.8 67-80.5 74.3-132.2 17.5-2.4 33.4-11.4 44.4-25.4 12-15.3 14.4-35.4 6-51.4zM324 180c-11 0-20-9-20-20s9-20 20-20 20 9 20 20-9 20-20 20z"/></svg>`,
-            barbo: `<svg viewBox="0 0 512 512" class="w-full h-full fill-current"><path d="M504.2 212.3c-15.4-22.3-40.6-37.4-68.5-44.2-20.5-5-41.8-6.1-62.7-4.2 3.6-13.4 5.3-27.2 4.8-41-.4-10.9-9.5-19.4-20.4-19-35.4 1.4-68.1 14.8-92.4 37.6-37.4-2.1-75.1 6.8-107.1 25.8L121 145c-7.6-6.4-18.9-5.4-25.4 2.5L59.2 192C32.1 207.4 8.5 229 1.2 251.4c-4.8 14.8-.5 30.9 11.2 39.8l32.1 24.2c-3.1 26.4 1.8 53.1 14.2 76.8l-25.4 25.4c-7.8 7.8-7.8 20.5 0 28.3l33.2 33.2c7.8 7.8 20.5 7.8 28.3 0l27.4-27.4c28.5 12.4 59.4 18.5 90.4 17.8-1.4 13.4-6.3 26.2-14.2 37.1-6.4 8.8-4.5 21.2 4.3 27.6 3.4 2.5 7.4 3.7 11.4 3.7 6.1 0 12.1-2.9 15.9-8.2 15.4-21.3 22.8-47.1 22.3-73.1 20.5-3.6 40.4-11.4 58.5-23.2 36.4-23.7 63.4-58.4 74.8-98.2 14.8-6.3 27.4-16.8 35.1-30.2 8.4-14.5 7.8-32.2-.4-45.8zM312 176c-9.9 0-18-8.1-18-18s8.1-18 18-18 18 8.1 18 18-8.1 18-18 18z"/></svg>`,
-            trucha: `<svg viewBox="0 0 512 512" class="w-full h-full fill-current"><path d="M508.2 202.3c-10.4-20.5-28.7-36.4-52.4-45.2-18.2-6.8-37.8-9.9-57.2-9.1 1.1-12.4 1.1-24.9-.3-37.3-1.2-11.2-11.2-19.4-22.4-18.2-34.1 3.6-65.4 20.3-87.4 45.4-35.4-2.1-71.1 6.3-101.4 24.6L142 141c-7.4-6.6-18.7-5.8-25.2 1.8l-36.4 42.4C51.2 201.3 23.4 223 8.2 244.4c-10.4 14.6-6.4 34.9 9.1 44.7l30.4 19.2c-2.4 26.4 2.1 53.1 13.4 77.1l-24.2 24.2c-7.8 7.8-7.8 20.5 0 28.3l34.2 34.2c7.8 7.8 20.5 7.8 28.3 0l25.4-25.4c28.5 12.4 59.4 18.2 90.4 16.8-1.8 13.4-6.8 26.2-15.1 37.1-6.6 8.8-4.8 21.3 4 27.9 3.4 2.5 7.4 3.7 11.4 3.7 6.1 0 12.1-2.9 15.9-8.2 16.4-21.8 24.4-48.4 24.3-75.1 19.8-3.6 39.2-11.2 56.5-22.7 36.4-24.2 63.1-59.4 73.8-99.8 14.8-6.1 27.2-16.2 34.6-29.4 8.6-14.7 8.2-32.5-.2-45.9zM304 172c-9.9 0-18-8.1-18-18s8.1-18 18-18 18 8.1 18 18-8.1 18-18 18z"/></svg>`
+            carpa: `<svg viewBox="0 0 512 300" class="w-full h-full fill-current"><path d="M500,140 C430,90 340,60 260,80 C200,95 150,130 90,135 C60,138 30,120 10,105 C5,130 12,160 35,175 C60,190 95,170 130,175 C200,185 270,210 350,195 C410,180 470,170 500,140 Z M180,120 C170,120 160,110 160,100 C160,90 170,80 180,80 C190,80 200,90 200,100 C200,110 190,120 180,120 Z" opacity="0.85"/></svg>`,
+            siluro: `<svg viewBox="0 0 512 200" class="w-full h-full fill-current"><path d="M500,90 C440,70 340,55 240,70 C160,82 110,110 60,115 C35,118 15,100 5,85 C0,105 8,135 25,145 C50,160 85,130 140,125 C220,118 320,135 400,125 C460,115 485,105 500,90 Z M90,95 C85,95 80,90 80,85 C80,80 85,75 90,75 C95,75 100,80 100,85 C100,90 95,95 90,95 Z" opacity="0.85"/></svg>`,
+            bass: `<svg viewBox="0 0 512 300" class="w-full h-full fill-current"><path d="M495,130 C435,85 365,70 290,82 C220,92 165,120 110,125 C75,128 40,110 15,95 C10,115 15,145 35,160 C65,180 105,160 150,165 C220,172 295,195 370,180 C430,168 475,155 495,130 Z M220,115 C210,115 200,105 200,95 C200,85 210,75 220,75 C230,75 240,85 240,95 C240,105 230,115 220,115 Z" opacity="0.85"/></svg>`,
+            lucioperca: `<svg viewBox="0 0 512 220" class="w-full h-full fill-current"><path d="M505,100 C445,75 365,65 295,75 C225,85 165,110 115,112 C75,114 45,98 15,85 C10,105 12,135 32,145 C62,160 102,140 145,142 C225,145 305,165 380,150 C440,138 485,122 505,100 Z M250,100 C242,100 235,92 235,85 C235,78 242,70 250,70 C258,70 265,78 265,85 C265,92 258,100 250,100 Z" opacity="0.85"/></svg>`,
+            lucio: `<svg viewBox="0 0 512 180" class="w-full h-full fill-current"><path d="M508,80 C448,65 378,55 308,62 C228,70 158,95 108,98 C68,100 38,88 12,75 C8,95 10,120 28,130 C58,145 98,125 148,122 C238,118 328,132 408,120 C468,110 492,95 508,80 Z M330,85 C322,85 315,78 315,70 C315,62 322,55 330,55 C338,55 345,62 345,70 C345,78 338,85 330,85 Z" opacity="0.85"/></svg>`,
+            alburno: `<svg viewBox="0 0 512 160" class="w-full h-full fill-current"><path d="M505,75 C445,60 375,52 305,58 C235,65 175,85 125,88 C85,90 55,80 20,68 C15,85 22,105 40,112 C70,125 110,110 155,108 C235,105 315,118 385,108 C445,100 485,90 505,75 Z" opacity="0.85"/></svg>`,
+            percasol: `<svg viewBox="0 0 512 340" class="w-full h-full fill-current"><path d="M490,160 C420,100 340,80 260,105 C190,125 130,160 80,165 C50,168 25,145 5,130 C0,155 10,190 35,210 C65,230 115,200 165,210 C245,225 325,255 405,230 C465,210 485,185 490,160 Z" opacity="0.85"/></svg>`,
+            barbo: `<svg viewBox="0 0 512 220" class="w-full h-full fill-current"><path d="M504,105 C444,80 364,70 294,80 C224,90 164,115 114,118 C74,120 44,105 12,92 C8,112 12,142 32,152 C62,168 102,145 144,148 C224,152 304,172 379,158 C439,146 484,128 504,105 Z" opacity="0.85"/></svg>`,
+            trucha: `<svg viewBox="0 0 512 240" class="w-full h-full fill-current"><path d="M508,110 C448,85 368,75 298,85 C228,95 168,120 118,122 C78,124 48,108 15,95 C10,115 14,145 34,155 C64,170 104,150 148,152 C228,155 308,175 383,160 C443,148 488,132 508,110 Z" opacity="0.85"/></svg>`
         };
 
-        // --- BASE DE DATOS BIOLÓGICA (ACTUALIZADA CON SILURO Y COSUENDA) ---
+        // BASE DE DATOS DE PESCA
         const DATA_PESCA = {
             carpa: {
                 nombre: "Carpa Común", capa: "fondo", colorRig: "#eab308", cientifico: "Cyprinus carpio", colorClass: "border-yellow-500/30 hover:border-yellow-500 bg-yellow-950/10 text-yellow-500", habitats: ["Zaragoza", "Caspe", "Mequinenza", "Mezalocha", "Tosos", "Cosuenda"], cana: "Carpfishing 12ft 3.5lb", carrete: "Baitrunner 10000", linea: "Monofilamento 0.35mm", bajo: "Trenzado con Hair Rig",
@@ -243,11 +236,11 @@
                     grandesMases: { titulo: "Hair Rig con Boilie Salado de Krill", desc: "En el Mar de Aragón el cangrejo es su dieta base.", alt: "Boilie Krill" }, 
                     pequenosMases: { titulo: "Montajes Dulces (Piña)", desc: "En Tosos la carpa reacciona de maravilla al aroma frutal.", alt: "Scopex/Piña" }, 
                     rio: { titulo: "Maíz Fermentado Duro", desc: "Para el Ebro granos pesados anti-corriente.", alt: "Robin Red" },
-                    cosuenda: { titulo: "Boilie de Fresa Dulce Intensa", desc: "Táctica específica para Cosuenda. Cebo muy soluble de alta atracción aromática.", alt: "Fresa Dulce" }
+                    cosuenda: { titulo: "Boilie de Fresa Dulce Intensa", desc: "Táctica de alta atracción. Colocar el montaje muy cerca de los obstáculos vegetales de la pared.", alt: "Fresa Dulce" }
                 }
             },
             siluro: {
-                nombre: "Siluro", capa: "fondo", colorRig: "#ef4444", cientifico: "Silurus glanis", colorClass: "border-red-500/30 hover:border-red-500 bg-red-950/10 text-red-500", habitats: ["Zaragoza", "Caspe", "Mequinenza"], cana: "Heavy Catfish 4.20m (Hasta 300g)", carrete: "Bobina fija reforzada (Fuerza 25kg)", linea: "Trenzado blindado 0.60mm", bajo: "Bucle de Alambre de Acero (Heavy Wire)",
+                nombre: "Siluro", capa: "fondo", colorRig: "#ef4444", cientifico: "Silurus glanis", colorClass: "border-red-500/30 hover:border-red-500 bg-red-950/10 text-red-500", habitats: ["Zaragoza", "Caspe", "Mequinenza"], cana: "Heavy Catfish 4.20m", carrete: "Bobina fija 25kg fuerza", linea: "Trenzado blindado 0.60mm", bajo: "Bucle de Alambre de Acero (Heavy Wire)",
                 focoRio: "Grandes pozas, remolinos de puentes y cuevas de arcilla.", focoPantano: "Cortados abruptos y antiguas estructuras sumergidas en el cauce.",
                 configSabores: {
                     grandesMases: { titulo: "Pez Vivo / Gran Vinilo (25cm)", desc: "Buscando al gran depredador suspendido cerca del lecho.", alt: "Shad / Vivo" },
@@ -257,47 +250,51 @@
             bass: { 
                 nombre: "Black Bass", capa: "medias", colorRig: "#38bdf8", cientifico: "Micropterus salmoides", colorClass: "border-sky-500/30 hover:border-sky-500 bg-sky-950/10 text-sky-400", habitats: ["Mezalocha", "Tosos", "Caspe", "Mequinenza"], cana: "6'8\" MH Fast Action", carrete: "Casting rápido", linea: "Trenzado 30 lbs", bajo: "Fluorocarbono 0.35mm", 
                 focoRio: "Estructuras muertas u obstáculos de orilla.", focoPantano: "Cortados de piedra y árboles sumergidos.",
-                configSabores: { grandesMases: { titulo: "Cangrejos de Vinilo con Sal", desc: "Sondeando coberturas profundas en Caspe/Mequinenza.", alt: "Swimbait" }, pequenosMases: { titulo: "Criaturas Finesse sin Plomo (Ned / Wacky)", desc: "Caídas muy lentas en aguas claras de Tosos o Mezalocha.", alt: "Ned Rig" }, rio: { titulo: "Spinnerbaits de palas anchas", desc: "Vibración sónica pura si el agua se enturbia.", alt: "Crankbaits" } } 
+                configSabores: { grandesMases: { titulo: "Cangrejos de Vinilo con Sal", desc: "Sondeando coberturas profundas.", alt: "Swimbait" }, pequenosMases: { titulo: "Criaturas Finesse sin Plomo", desc: "Caídas muy lentas en aguas claras.", alt: "Ned Rig" } } 
             },
             lucioperca: { 
                 nombre: "Lucioperca", capa: "fondo", colorRig: "#10b981", cientifico: "Sander lucioperca", colorClass: "border-emerald-500/30 hover:border-emerald-500 bg-emerald-950/10 text-emerald-400", habitats: ["Zaragoza", "Mezalocha", "Caspe", "Mequinenza"], cana: "7'3\" Extra-Fast", carrete: "Spinning 2500", linea: "Trenzado PE 0.12mm", bajo: "Fluorocarbono 0.26mm", 
                 focoRio: "Piedras profundas y pozas del lecho.", focoPantano: "Taludes de arcilla limpia de 8 a 15 metros.",
-                configSabores: { grandesMases: { titulo: "Soft Shads con Esencia", desc: "Rascando badenes rocosos profundos.", alt: "Carolina Rig" }, pequenosMases: { titulo: "Vinilos con aroma a Calamar", desc: "Movimientos muy sutiles en aguas paradas.", alt: "Twitchbaits" }, rio: { titulo: "Shads plomados de colores flúor", desc: "Colores reactivos para batir las aguas tomadas del Ebro.", alt: "Cucharilla" } } 
+                configSabores: { grandesMases: { titulo: "Montaje Jig Head con Vinilo Shad", desc: "Estrategia de lance y recogida lineal rascando el fondo del embalse.", alt: "Jig Head / Shad" }, rio: { titulo: "Shads plomados de colores flúor", desc: "Colores reactivos para batir las aguas tomadas del Ebro.", alt: "Soft Shad" } } 
             },
             lucio: { 
                 nombre: "Lucio", capa: "medias", colorRig: "#14b8a6", cientifico: "Esox lucius", colorClass: "border-teal-500/30 hover:border-teal-500 bg-teal-950/10 text-teal-400", habitats: ["Mezalocha", "Caspe", "Mequinenza"], cana: "7'2\" Heavy", carrete: "Casting robusto", linea: "Trenzado 40 lbs", bajo: "Titanio anti-dientes", 
-                focoRio: "Zonas muertas sin corriente.", focoPantano: "Puntas de islas y algueros someros.",
-                configSabores: { grandesMases: { titulo: "Shads Gigantes de 20cm", desc: "Buscando activar al gran depredador suspendido.", alt: "Ondulantes" }, pequenosMases: { titulo: "Jerkbaits técnicos", desc: "Estímulos reactivos rápidos en Mezalocha.", alt: "Vinilos" }, rio: { titulo: "Swinbaits de hundimiento rápido", desc: "Buscando cortar la corriente cerca de muros.", alt: "Cucharas" } } 
+                focoRio: "Zonas muertas sin corriente.", focoPantano: "Puntas de islands y algueros someros.",
+                configSabores: { grandesMases: { titulo: "Shads Gigantes de 20cm", desc: "Buscando activar al gran depredador.", alt: "Ondulantes" } } 
             },
             alburno: { 
                 nombre: "Alburno", capa: "superficie", colorRig: "#94a3b8", cientifico: "Alburnus alburnus", colorClass: "border-slate-500/30 hover:border-slate-400 bg-slate-950/10 text-slate-400", habitats: ["Zaragoza", "Mezalocha", "Caspe", "Mequinenza"], cana: "Coup telescópica 3m", carrete: "Línea directa", linea: "Monofilamento 0.12mm", bajo: "Anzuelo n° 22", 
-                focoRio: "Corrientes mansas y contracorrientes de orilla.", focoPantano: "Nubes masivas en réculas resguardadas.",
-                configSabores: { grandesMases: { titulo: "Asticot vivo", desc: "Manteniendo el cardumen activo bajo el flotador.", alt: "Asticot" }, pequenosMases: { titulo: "Asticot con Vainilla Dulce", desc: "Acelera su frenesí devorador en aguas paradas.", alt: "Masilla" }, rio: { titulo: "Enguado ligero de superficie", desc: "Nube de cebado flotante a favor de corriente.", alt: "Caster" } } 
+                focoRio: "Corrientes mansas de orilla.", focoPantano: "Nubes masivas en réculas.",
+                configSabores: { grandesMases: { titulo: "Asticot vivo", desc: "Manteniendo el cardumen activo.", alt: "Asticot" } } 
             },
             percasol: { 
                 nombre: "Percasol", capa: "superficie", colorRig: "#a855f7", cientifico: "Lepomis gibbosus", colorClass: "border-purple-500/30 hover:border-purple-500 bg-purple-950/10 text-purple-400", habitats: ["Mezalocha", "Tosos", "Caspe", "Mequinenza"], cana: "Rockfishing", carrete: "Tamaño 1000", linea: "Monofilamento 0.16mm", bajo: "Anzuelo n° 16", 
-                focoRio: "Márgenes sin flujo.", focoPantano: "Paredes rocosas y rampas de piedra suelta.",
-                configSabores: { grandesMases: { titulo: "Lombriz troceada", desc: "Rascando los bloques orillados.", alt: "Microvinilos" }, pequenosMases: { titulo: "Microvinilos dulces", desc: "Patrullando la orilla inmediata.", alt: "Microcucharilla" }, rio: { titulo: "Lombriz natural", desc: "Pegado a las raíces.", alt: "Lombriz" } } 
+                focoRio: "Márgenes sin flujo.", focoPantano: "Paredes rocosas.",
+                configSabores: { grandesMases: { titulo: "Lombriz troceada", desc: "Rascando los bloques orillados.", alt: "Microvinilos" } } 
             },
             barbo: { 
-                nombre: "Barbo Ebro", capa: "fondo", colorRig: "#b45309", cientifico: "Barbus graellsii", colorClass: "border-amber-700/40 hover:border-amber-600 bg-amber-950/20 text-amber-600", habitats: ["Zaragoza", "Tosos", "Caspe", "Mequinenza"], cana: "Feeder / Heavy Feeder 3.60m", carrete: "Tamaño 4000 freno micrométrico", linea: "Monofilamento 0.22mm", bajo: "Fluorocarbono 0.18mm", 
-                focoRio: "Cunas de grava limpia con corriente moderada-fuerte.", focoPantano: "Recodos profundos de entrada de agua limpia en Tosos.",
-                configSabores: { grandesMases: { titulo: "Pellets de Queso / Halibut", desc: "En embalses grandes buscan perfiles cárnicos.", alt: "Pellet" }, pequenosMases: { titulo: "Montaje Feeder con Queso Fuerte", desc: "Estrategia precisa en Tosos. Responde al queso curado.", alt: "Queso Curado" }, rio: { titulo: "Huella de Sangre / Cangrejo triturado", desc: "En el Ebro busca cebo pesado rascando piedras.", alt: "Asticot" } } 
+                nombre: "Barbo Ebro", capa: "fondo", colorRig: "#b45309", cientifico: "Barbus graellsii", colorClass: "border-amber-700/40 hover:border-amber-600 bg-amber-950/20 text-amber-600", habitats: ["Zaragoza", "Tosos", "Caspe", "Mequinenza"], cana: "Feeder Heavy 3.60m", carrete: "Tamaño 4000", linea: "Monofilamento 0.22mm", bajo: "Fluorocarbono 0.18mm", 
+                focoRio: "Cunas de grava limpia con corriente.", focoPantano: "Recodos profundos de entrada de agua.",
+                configSabores: { grandesMases: { titulo: "Pellets de Queso / Halibut", desc: "En embalses buscan perfiles cárnicos.", alt: "Pellet" } } 
             },
             trucha: { 
-                nombre: "Trucha Arcoíris", capa: "medias", colorRig: "#ec4899", cientifico: "Oncorhynchus mykiss", colorClass: "border-pink-500/30 hover:border-pink-500 bg-pink-950/10 text-pink-400", habitats: ["Tosos"], cana: "Ultra Light 1.80m", carrete: "Tamaño 1000 rápido", linea: "Monofilamento 0.16mm", bajo: "Fluorocarbono 0.14mm", 
-                focoRio: "Zonas de corriente rota.", focoPantano: "Zonas cercanas a la presa y entrada de agua fresca de montaña.",
-                configSabores: { pequenosMases: { titulo: "Cucharillas Giratorias", desc: "Específico de Tosos. Capas medias buscando eclosiones.", alt: "Minnows" } } 
+                nombre: "Trucha Arcoíris", capa: "medias", colorRig: "#ec4899", cientifico: "Oncorhynchus mykiss", colorClass: "border-pink-500/30 hover:border-pink-500 bg-pink-950/10 text-pink-400", habitats: ["Tosos"], cana: "Ultra Light 1.80m", carrete: "Tamaño 1000", linea: "Monofilamento 0.16mm", bajo: "Fluorocarbono 0.14mm", 
+                focoRio: "Zonas de corriente rota.", focoPantano: "Cerca de la presa.",
+                configSabores: { pequenosMases: { titulo: "Cucharillas Giratorias", desc: "Capas medias buscando eclosiones.", alt: "Minnows" } } 
             }
         };
 
         let mapa, marcador, entornoDetectado = "Río", ubicacionNombre = "Río Ebro (Zaragoza)", presionActual = 1013;
         let streamCamara = null, fotoBase64 = null;
 
-        // --- SISTEMA INTERACTIVO DE MAPA ---
+        // INICIALIZACIÓN MAPA SATELITAL REALISTA (Esri World Imagery)
         function initMapa() {
             mapa = L.map('map').setView([41.6575, -0.8762], 11);
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; CARTO' }).addTo(mapa);
+            
+            L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+            }).addTo(mapa);
+
             marcador = L.marker([41.6575, -0.8762]).addTo(mapa);
             setTimeout(() => { mapa.invalidateSize(); }, 300);
 
@@ -320,15 +317,13 @@
             const data = PRESETS_UBICACION[key];
             if (data) {
                 cargarPuntoCalibrado(data.lat, data.lng, data.nombre, data.tipo);
-                if(mapa) { mapa.setView([data.lat, data.lng], 12); }
+                if(mapa) { mapa.setView([data.lat, data.lng], 13); }
             }
         }
 
         function cargarPuntoCalibrado(lat, lng, nombre, tipoAgua) {
             if(marcador) marcador.setLatLng([lat, lng]);
-            
-            entornoDetectado = tipoAgua;
-            ubicacionNombre = nombre;
+            entornoDetectado = tipoAgua; ubicacionNombre = nombre;
 
             document.getElementById('txt-geo-coor').innerText = `${lat.toFixed(3)}, ${lng.toFixed(3)}`;
             document.getElementById('txt-geo-nombre').innerText = nombre;
@@ -337,7 +332,7 @@
             if (nombre.includes("Cosuenda")) {
                 badge.innerText = "🧱 BALSA DE PARED / COSUENDA";
                 badge.className = "text-xs font-black text-emerald-400 tracking-wide block text-center";
-                document.getElementById('txt-turbidez').innerText = "Vegetal (1.1m)";
+                document.getElementById('txt-turbidez').innerText = "Vegetal (1.2m)";
             } else if (tipoAgua === "Río") {
                 badge.innerText = "🌊 FLUVIAL / RÍO";
                 badge.className = "text-xs font-black text-sky-400 tracking-wide block text-center";
@@ -345,20 +340,15 @@
             } else {
                 badge.innerText = "🏔️ EMBALSE / LAGO";
                 badge.className = "text-xs font-black text-teal-400 tracking-wide block text-center";
-                document.getElementById('txt-turbidez').innerText = "Claro (2.3m)";
+                document.getElementById('txt-turbidez').innerText = "Claro (2.4m)";
             }
 
             const calculo = Math.abs(Math.sin(lat) * Math.cos(lng));
             presionActual = Math.floor(1009 + (calculo * 14));
-            let temp = Math.floor(15 + (calculo * 9));
-            let viento = Math.floor(4 + (calculo * 30));
-
             document.getElementById('txt-presion').innerText = `${presionActual} hPa`;
-            document.getElementById('txt-temp').innerText = `${temp}°C`;
-            document.getElementById('txt-viento').innerText = `${viento} km/h`;
-
-            let termoclina = tipoAgua === "Río" ? (temp - 1.5).toFixed(1) : (temp - 4.5).toFixed(1);
-            document.getElementById('val-termoclina').innerText = `| 🌡️ Th: ${termoclina}°C`;
+            document.getElementById('txt-temp').innerText = `${Math.floor(16 + (calculo * 8)) taste}°C`;
+            document.getElementById('txt-viento').innerText = `${Math.floor(5 + (calculo * 25))} km/h`;
+            document.getElementById('val-termoclina').innerText = `| 🌡️ Th: ${(16 + (calculo * 5)).toFixed(1)}°C`;
 
             renderizarMatrizEspecies();
         }
@@ -366,7 +356,6 @@
         function renderizarMatrizEspecies() {
             const grid = document.getElementById('grid-especies');
             grid.innerHTML = "";
-
             let idFiltro = "Zaragoza";
             if (ubicacionNombre.includes("Caspe")) idFiltro = "Caspe";
             if (ubicacionNombre.includes("Mequinenza")) idFiltro = "Mequinenza";
@@ -381,7 +370,7 @@
                     card.onclick = () => abrirConsolaEspecie(key, idFiltro);
                     card.className = `p-2.5 rounded-xl border flex flex-col items-center justify-between text-center transition-all cursor-pointer h-16 ${pez.colorClass}`;
                     card.innerHTML = `
-                        <div class="w-7 h-7 flex items-center justify-center opacity-80">${CONTORNOS_SVG[key] || CONTORNOS_SVG['carpa']}</div>
+                        <div class="w-8 h-5 flex items-center justify-center text-slate-900 drop-shadow-[0_2px_3px_rgba(0,255,240,0.4)]">${CONTORNOS_SVG[key] || CONTORNOS_SVG['carpa']}</div>
                         <span class="text-[9px] font-black block uppercase tracking-wide truncate w-full text-white">${pez.nombre}</span>
                     `;
                     grid.appendChild(card);
@@ -390,147 +379,102 @@
             document.getElementById('reporte-contenedor').classList.add('hidden');
         }
 
-        // --- MOTOR VECTORIAL DE APAREJOS REALISTAS ---
+        // MOTOR VECTORIAL REFACTORIZADO: SEÑUELO EXCLUSIVO SHAD VINILO PARA LUCIOPERCA
         function construirAparejoRealista(capa, color, especieKey) {
             const svg = document.getElementById('svg-aparejo');
             svg.innerHTML = ""; 
 
             let html = `
                 <defs>
-                    <linearGradient id="grad-plomo" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="#475569"/>
-                        <stop offset="50%" stop-color="#334155"/>
-                        <stop offset="100%" stop-color="#1e293b"/>
-                    </linearGradient>
-                    <linearGradient id="grad-lure" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stop-color="${color}"/>
-                        <stop offset="40%" stop-color="#ffffff" stop-opacity="0.5"/>
-                        <stop offset="100%" stop-color="${color}"/>
-                    </linearGradient>
-                    <linearGradient id="grad-corcho" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stop-color="#ea580c"/>
-                        <stop offset="50%" stop-color="#ffedd5"/>
-                        <stop offset="100%" stop-color="#c2410c"/>
-                    </linearGradient>
+                    <linearGradient id="grad-plomo" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#64748b"/><stop offset="100%" stop-color="#1e293b"/></linearGradient>
+                    <linearGradient id="grad-vinilo" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="${color}"/><stop offset="100%" stop-color="#ffffff" stop-opacity="0.3"/></linearGradient>
+                    <linearGradient id="grad-corcho" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#ea580c"/><stop offset="100%" stop-color="#c2410c"/></linearGradient>
                 </defs>
                 <line x1="10" y1="195" x2="150" y2="195" stroke="#334155" stroke-width="2" stroke-dasharray="4,2"/>
+                <path d="M40,-10 L80,30 L80,100" fill="none" stroke="#64748b" stroke-width="1" stroke-dasharray="1,1" />
             `;
 
-            html += `<path d="M40,-10 L80,30 L80,100" fill="none" stroke="#64748b" stroke-width="1" stroke-dasharray="1,1" />`;
-
-            if (especieKey === "siluro") {
-                // --- MONTAJE EXCLUSIVO SILURO: HEAVY WIRE RIG CON VINO/PADDLE SHAD ---
+            if (especieKey === "lucioperca") {
+                // --- MONTAJE EXCLUSIVO LUCIOPERCA: SEÑUELO TÉCNICO SHAD VINILO (JIG HEAD) ---
                 html += `
-                    <line x1="40" y1="10" x2="70" y2="95" stroke="#ef4444" stroke-width="2" stroke-dasharray="3,1"/> <!-- Trenzado Rojo Grueso -->
-                    <!-- Plomo Corredizo de Pera Pesado -->
+                    <line x1="40" y1="10" x2="80" y2="140" stroke="#94a3b8" stroke-width="1.2"/> <!-- Bajo de Fluorocarbono -->
+                    <g transform="translate(80,140)">
+                        <!-- Cabeza Plomada Redonda (Jig Head) -->
+                        <circle cx="0" cy="0" r="6" fill="url(#grad-plomo)"/>
+                        <circle cx="-1" cy="-1" r="1.5" fill="#000000"/>
+                        <!-- Ojo de la línea (Anilla) -->
+                        <circle cx="0" cy="-6" r="1.5" fill="none" stroke="#94a3b8" stroke-width="1"/>
+                        
+                        <!-- Cuerpo de Pez de Vinilo / Shad Señuelo -->
+                        <g transform="rotate(10)">
+                            <path d="M5,0 Q25,-12 55,-3 Q68,-1 75,-8 L73,3 Q65,1 55,4 Q25,8 5,0 Z" fill="url(#grad-vinilo)"/>
+                            <!-- Cola de Paddle del vinilo -->
+                            <path d="M75,-8 Q80,-4 78,3 L73,3 Z" fill="${color}"/>
+                            <!-- Anzuelo Jiguero Expuesto por la parte superior -->
+                            <path d="M0,0 L20,-5 Q35,-9 40,0 L40,-5 Q40,-10 36,-10" fill="none" stroke="#cbd5e1" stroke-width="1.5" stroke-linecap="round"/>
+                        </g>
+                    </g>
+                `;
+            } else if (especieKey === "siluro") {
+                html += `
+                    <line x1="40" y1="10" x2="70" y2="95" stroke="#ef4444" stroke-width="2"/>
                     <path d="M70,95 C62,115 62,130 70,135 C78,130 78,115 70,95 Z" fill="url(#grad-plomo)"/>
-                    <circle cx="70" cy="138" r="3" fill="#475569"/> <!-- Tope de goma impacto -->
-                    <!-- Bajo de Línea de Acero / Titanio -->
                     <line x1="70" y1="141" x2="95" y2="170" stroke="#cbd5e1" stroke-width="2.5"/>
-                    <!-- Cuerpo Gran Pez de Vinilo / Shad 25cm -->
                     <g transform="translate(95,170) rotate(5)">
-                        <path d="M0,0 Q25,-18 60,-5 Q75,-2 85,-12 L82,2 Q75,0 65,5 Q25,12 0,0 Z" fill="#475569"/>
-                        <!-- Cola de Paddle Vibratoria -->
+                        <path d="M0,0 Q25,-18 60,-5 Q75,-2 85,-12 L82,2 Z" fill="#475569"/>
                         <path d="M85,-12 Q90,-5 88,2 L82,2 Z" fill="#ef4444"/>
-                        <circle cx="10" cy="-2" r="3" fill="#ef4444"/>
-                        <!-- Anzuelo Potera Reforzado 4X -->
                         <g transform="translate(35,5)">
                             <line x1="0" y1="0" x2="0" y2="12" stroke="#94a3b8" stroke-width="1.8"/>
-                            <path d="M-6,12 Q0,17 6,12 M0,12 Q-4,15 -4,10 M0,12 Q4,15 4,10" fill="none" stroke="#94a3b8" stroke-width="1.8" stroke-linecap="round"/>
+                            <path d="M-6,12 Q0,17 6,12" fill="none" stroke="#94a3b8" stroke-width="1.8"/>
                         </g>
                     </g>
                 `;
             } else if (capa === "superficie") {
-                // --- MONTAJE DE FLOTADOR REALISTA (COUP) ---
                 html += `
-                    <line x1="80" y1="15" x2="80" y2="35" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round"/>
                     <ellipse cx="80" cy="50" rx="7" ry="15" fill="url(#grad-corcho)"/>
-                    <line x1="80" y1="65" x2="80" y2="90" stroke="#0f172a" stroke-width="1.5"/>
-                    <circle cx="80" cy="110" r="2.5" fill="url(#grad-plomo)"/>
-                    <circle cx="80" cy="125" r="2.2" fill="url(#grad-plomo)"/>
-                    <rect x="78.5" y="150" width="3" height="6" rx="1" fill="#64748b" stroke="#334155" stroke-width="0.5"/>
-                    <line x1="80" y1="156" x2="95" y2="175" stroke="#94a3b8" stroke-width="0.8"/>
-                    <path d="M95,175 Q96,184 91,184 Q87,184 87,179 Q87,175 91,176" fill="none" stroke="#94a3b8" stroke-width="1.2" stroke-linecap="round"/>
-                    <path d="M93,176 Q97,173 100,177 Q102,182 96,182" fill="none" stroke="#fef08a" stroke-width="3" stroke-linecap="round"/>
+                    <line x1="80" y1="65" x2="80" y2="130" stroke="#94a3b8" stroke-width="1"/>
+                    <path d="M80,130 Q82,138 78,138" fill="none" stroke="#94a3b8" stroke-width="1.2"/>
+                    <path d="M79,136 Q85,133 88,138" fill="none" stroke="#fef08a" stroke-width="3"/>
                 `;
             } else if (capa === "medias") {
-                // --- SEÑUELO ARTIFICIAL REALISTA (JERKBAIT) ---
                 html += `
-                    <line x1="40" y1="10" x2="70" y2="75" stroke="#06b6d4" stroke-width="1"/>
-                    <path d="M70,75 Q73,73 75,76 L73,79 Z" fill="none" stroke="#94a3b8" stroke-width="1"/>
-                    <g transform="translate(73, 76) rotate(15)">
-                        <path d="M0,0 L-8,8 L-4,10 L2,3 Z" fill="#e2e8f0" fill-opacity="0.6" stroke="#94a3b8" stroke-width="0.5"/>
-                        <path d="M0,0 Q20,-12 50,-2 Q60,-1 65,-4 L63,4 Q55,3 45,6 Q20,8 0,0 Z" fill="url(#grad-lure)"/>
-                        <circle cx="8" cy="-1" r="2.5" fill="#eab308"/>
-                        <circle cx="9" cy="-1" r="1.2" fill="#000000"/>
-                        <g transform="translate(22, 4)">
-                            <line x1="0" y1="0" x2="0" y2="10" stroke="#94a3b8" stroke-width="1"/>
-                            <path d="M-4,10 Q0,14 4,10 M0,10 Q-3,13 -3,8 M0,10 Q3,13 3,8" fill="none" stroke="#94a3b8" stroke-width="1" stroke-linecap="round"/>
-                        </g>
+                    <g transform="translate(73, 86) rotate(15)">
+                        <path d="M0,0 Q20,-12 50,-2 Q60,-1 65,-4 L63,4 Z" fill="url(#grad-vinilo)"/>
+                        <g transform="translate(22, 4)"><line x1="0" y1="0" x2="0" y2="10" stroke="#94a3b8" stroke-width="1"/></g>
                     </g>
                 `;
             } else {
-                // --- MONTAJE DE FONDO PROFESIONAL CARPFISHING (HAIR RIG) ---
                 html += `
-                    <line x1="40" y1="10" x2="60" y2="130" stroke="#475569" stroke-width="1.2"/>
                     <rect x="58" y="125" width="4" height="12" rx="1.5" fill="#1e293b"/>
-                    <path d="M60,135 C54,155 52,175 60,175 C68,175 66,155 60,135 Z" fill="url(#grad-plomo)" stroke="#1e293b" stroke-width="0.5"/>
-                    <circle cx="60" cy="132" r="2" fill="none" stroke="#94a3b8" stroke-width="1"/>
+                    <path d="M60,135 C54,155 52,175 60,175 Z" fill="url(#grad-plomo)"/>
                     <path d="M60,132 Q85,145 105,178" fill="none" stroke="#5f6c3d" stroke-width="1.5"/>
                     <g transform="translate(105,178) rotate(-20)">
-                        <path d="M0,0 L2,10 Q4,16 -2,18 Q-8,18 -8,11 Q-8,7 -4,9" fill="none" stroke="#334155" stroke-width="1.5" stroke-linecap="round"/>
-                        <path d="M2,10 Q8,15 15,14" fill="none" stroke="#94a3b8" stroke-width="0.8"/>
+                        <path d="M0,0 L2,10 Q4,16 -2,18 Z" fill="none" stroke="#334155" stroke-width="1.5"/>
                         <circle cx="18" cy="14" r="7" fill="${color}"/>
-                        <circle cx="15" cy="11" r="6.3" fill="none" stroke="#ffffff" stroke-opacity="0.2" stroke-width="1"/>
-                        <line x1="25" y1="11" x2="25" y2="17" stroke="#eab308" stroke-width="1.5" stroke-linecap="round"/>
                     </g>
                 `;
             }
-
             svg.innerHTML = html;
         }
 
         function abrirConsolaEspecie(key, idFiltro) {
             const pez = DATA_PESCA[key];
-
             const txtAct = document.getElementById('rep-actividad-texto');
-            if (presionActual > 1015) { 
-                txtAct.innerText = "🎯 RECELOSA"; 
-                txtAct.className = "text-[10px] font-mono font-bold text-amber-400 block px-2 py-0.5 rounded bg-slate-950 border border-slate-800"; 
-            } else { 
-                txtAct.innerText = "⚡ ALTA ACTIVIDAD"; 
-                txtAct.className = "text-[10px] font-mono font-bold text-emerald-400 block px-2 py-0.5 rounded bg-slate-950 border border-slate-800"; 
-            }
+            
+            txtAct.innerText = presionActual > 1015 ? "🎯 RECELOSA" : "⚡ ALTA ACTIVIDAD";
+            txtAct.className = presionActual > 1015 ? "text-[10px] font-mono font-bold text-amber-400 block px-2 py-0.5 rounded bg-slate-950 border border-slate-800" : "text-[10px] font-mono font-bold text-emerald-400 block px-2 py-0.5 rounded bg-slate-950 border border-slate-800";
 
             document.getElementById('rep-especie-titulo').innerText = `OBJETIVO: ${pez.nombre}`;
             document.getElementById('rep-subtitulo').innerText = `Taxonomía: ${pez.cientifico}`;
 
-            // --- REFACTORIZACIÓN COMPORTAMIENTO LOCAL COSUENDA ---
             if (idFiltro === "Cosuenda") {
-                document.getElementById('rep-zona-foco').innerText = `Foco dinámico: En ${ubicacionNombre}, las carpas se concentran exclusivamente en las hierbas pegadas a la pared de contención.`;
-            } else if (entornoDetectado === "Río") {
-                document.getElementById('rep-zona-foco').innerText = `Foco dinámico: En ${ubicacionNombre}, se detectan en: ${pez.focoRio}`;
+                document.getElementById('rep-zona-foco').innerText = `Foco dinámico: En las hierbas pegadas a la pared de contención de la balsa.`;
             } else {
-                document.getElementById('rep-zona-foco').innerText = `Foco dinámico: En ${ubicacionNombre}, se detectan en: ${pez.focoPantano}`;
+                document.getElementById('rep-zona-foco').innerText = `Foco dinámico: ${entornoDetectado === "Río" ? pez.focoRio : pez.focoPantano}`;
             }
 
-            // --- LÓGICA DE SELECCIÓN DE SABOR INTELIGENTE (INCLUYE COSUENDA FRESA) ---
-            let ceboConfig = null;
-            if (idFiltro === "Cosuenda" && pez.configSabores.cosuenda) {
-                ceboConfig = pez.configSabores.cosuenda; // Inyección directa sabor fresa
-            } else if (entornoDetectado === "Río" && pez.configSabores.rio) {
-                ceboConfig = pez.configSabores.rio;
-            } else if (idFiltro === "Tosos" && pez.configSabores.pequenosMases) {
-                ceboConfig = pez.configSabores.pequenosMases;
-            } else {
-                ceboConfig = pez.configSabores.grandesMases || pez.configSabores.pequenosMases;
-            }
-
-            if (!ceboConfig) {
-                const llavesVisibles = Object.keys(pez.configSabores);
-                ceboConfig = llavesVisibles.length > 0 ? pez.configSabores[llavesVisibles[0]] : { titulo: "Lure Estándar", desc: "Ajustar al fondo.", alt: "Lombriz" };
-            }
-
+            let ceboConfig = idFiltro === "Cosuenda" && pez.configSabores.cosuenda ? pez.configSabores.cosuenda : (entornoDetectado === "Río" && pez.configSabores.rio ? pez.configSabores.rio : (pez.configSabores.grandesMases || pez.configSabores.pequenosMases));
+            
             document.getElementById('rep-lure-nombre').innerText = ceboConfig.titulo;
             document.getElementById('rep-lure-desc').innerText = ceboConfig.desc;
             document.getElementById('rep-lure-alt').innerText = ceboConfig.alt;
@@ -540,29 +484,18 @@
             document.getElementById('rep-tech-linea').innerText = pez.linea;
             document.getElementById('rep-tech-bajo').innerText = pez.bajo;
 
-            // --- PANEL SONAR VERTICAL ---
-            ["superficie", "medias", "fondo"].forEach(c => {
-                document.getElementById(`capa-${c}`).className = "p-1 border border-slate-800/40 rounded flex justify-between items-center transition-all bg-slate-900/40 text-slate-500";
-            });
-            document.getElementById('sonar-icon-sup').innerHTML = "";
-            document.getElementById('sonar-icon-med').innerHTML = "";
-            document.getElementById('sonar-icon-fon').innerHTML = "";
+            ["superficie", "medias", "fondo"].forEach(c => { document.getElementById(`capa-${c}`).className = "p-1 border border-slate-800/40 rounded flex justify-between items-center bg-slate-900/40 text-slate-500"; });
+            document.getElementById('sonar-icon-sup').innerHTML = ""; document.getElementById('sonar-icon-med').innerHTML = ""; document.getElementById('sonar-icon-fon').innerHTML = "";
 
-            let destinoIcono = "sonar-icon-med", nombreCapaVisual = "AGUAS MEDIAS (Termoclina)";
-            if (pez.capa === "superficie") { destinoIcono = "sonar-icon-sup"; nombreCapaVisual = "CAPA SUPERFICIAL GASEOSA"; }
-            else if (pez.capa === "fondo") { destinoIcono = "sonar-icon-fon"; nombreCapaVisual = "LECHO PROFUNDO / GRAVA"; }
-
-            document.getElementById(`capa-${pez.capa}`).className = "p-1 border border-cyan-500/30 rounded flex justify-between items-center transition-all bg-cyan-950/20 text-cyan-400 font-bold";
-            document.getElementById(destinoIcono).innerHTML = `<div class="w-4 h-4 text-cyan-400">${CONTORNOS_SVG[key] || CONTORNOS_SVG['carpa']}</div>`;
-            document.getElementById('sonar-capa-activa').innerText = `ECOS FIJADOS EN: ${nombreCapaVisual}`;
-
-            // Dibujar aparejo realista pasándole llave de especie
+            let destinoIcono = pez.capa === "superficie" ? "sonar-icon-sup" : (pez.capa === "fondo" ? "sonar-icon-fon" : "sonar-icon-med");
+            document.getElementById(`capa-${pez.capa}`).className = "p-1 border border-cyan-500/30 rounded flex justify-between items-center bg-cyan-950/20 text-cyan-400 font-bold";
+            document.getElementById(destinoIcono).innerHTML = `<div class="w-5 h-4 text-cyan-400 stroke-cyan-500">${CONTORNOS_SVG[key]}</div>`;
+            
             construirAparejoRealista(pez.capa, pez.colorRig, key);
-
             document.getElementById('reporte-contenedor').classList.remove('hidden');
         }
 
-        // --- MANEJO DE VENTANAS ---
+        // CONTROL DE SECCIONES (SÓLO ADMITE CÁMARA EN SECCIÓN CAPTURAS)
         function mostrarVentana(target) {
             const vMapa = document.getElementById('ventana-mapa');
             const vPokedex = document.getElementById('ventana-pokedex');
@@ -570,48 +503,36 @@
             const bPokedex = document.getElementById('btn-nav-pokedex');
 
             if (target === 'pokedex') {
-                vMapa.classList.add('hidden');
-                vPokedex.classList.remove('hidden');
-                bMapa.className = "flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold px-3 py-2 rounded-lg transition-all";
-                bPokedex.className = "flex-1 bg-cyan-500 text-slate-950 text-xs font-bold px-3 py-2 rounded-lg transition-all";
+                vMapa.classList.add('hidden'); vPokedex.classList.remove('hidden');
+                bMapa.className = "flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold px-3 py-2.5 rounded-xl transition-all";
+                bPokedex.className = "flex-1 bg-cyan-500 text-slate-950 text-xs font-bold px-3 py-2.5 rounded-xl transition-all";
                 renderizarPokedex();
             } else {
-                vPokedex.classList.add('hidden');
-                vMapa.classList.remove('hidden');
-                bPokedex.className = "flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold px-3 py-2 rounded-lg transition-all";
-                bMapa.className = "flex-1 bg-cyan-500 text-slate-950 text-xs font-bold px-3 py-2 rounded-lg transition-all";
+                vPokedex.classList.add('hidden'); vMapa.classList.remove('hidden');
+                bPokedex.className = "flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold px-3 py-2.5 rounded-xl transition-all";
+                bMapa.className = "flex-1 bg-cyan-500 text-slate-950 text-xs font-bold px-3 py-2.5 rounded-xl transition-all";
                 setTimeout(() => { if(mapa) mapa.invalidateSize(); }, 200);
             }
         }
 
-        // --- HARDWARE ÓPTICO CAMARA Y LOGS LOCALES ---
+        // OPTICA DE HARDWARE DE CÁMARA
         async function abrirCamara() {
             const modal = document.getElementById('modal-camara');
             const video = document.getElementById('video-camara');
             const canvas = document.getElementById('canvas-foto');
             
-            modal.classList.remove('hidden');
-            video.classList.remove('hidden');
+            modal.classList.remove('hidden'); video.classList.remove('hidden'); canvas.add = "hidden";
             canvas.classList.add('hidden');
             document.getElementById('controles-disparo').classList.remove('hidden');
             document.getElementById('formulario-captura').classList.add('hidden');
-
-            if (typeof ubicacionNombre !== 'undefined') {
-                document.getElementById('ins-lugar').value = ubicacionNombre;
-            }
+            document.getElementById('ins-lugar').value = ubicacionNombre;
 
             if (streamCamara) { streamCamara.getTracks().forEach(track => track.stop()); }
-
             try {
-                streamCamara = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: { exact: "environment" } }, audio: false
-                });
+                streamCamara = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { exact: "environment" } }, audio: false });
             } catch (err) {
-                try {
-                    streamCamara = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-                } catch(e) {
-                    alert("Hardware óptico de la terminal no disponible.");
-                    cerrarCamara();
+                try { streamCamara = await navigator.mediaDevices.getUserMedia({ video: true, audio: false }); } catch(e) {
+                    alert("Cámara no disponible en este dispositivo."); cerrarCamara();
                 }
             }
             if (streamCamara && video) video.srcObject = streamCamara;
@@ -620,43 +541,25 @@
         function capturarFoto() {
             const video = document.getElementById('video-camara');
             const canvas = document.getElementById('canvas-foto');
-            const ctx = canvas.getContext('2d');
-
             if (!video || video.videoWidth === 0) return;
 
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            
+            canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
             fotoBase64 = canvas.toDataURL('image/jpeg', 0.6);
 
-            video.classList.add('hidden');
-            canvas.classList.remove('hidden');
+            video.classList.add('hidden'); canvas.classList.remove('hidden');
             document.getElementById('controles-disparo').classList.add('hidden');
             document.getElementById('formulario-captura').classList.remove('hidden');
-
             if (streamCamara) { streamCamara.getTracks().forEach(track => track.stop()); }
-
-            const especieSelector = document.getElementById('ins-especie');
-            if (especieSelector) {
-                if (ubicacionNombre.includes("Cosuenda")) especieSelector.value = "carpa";
-                else if (ubicacionNombre.includes("Zaragoza")) especieSelector.value = "siluro";
-                else if (ubicacionNombre.includes("Mequinenza") || ubicacionNombre.includes("Caspe")) especieSelector.value = "siluro";
-                else especieSelector.value = "carpa";
-            }
         }
 
         function guardarCaptura() {
             const especieKey = document.getElementById('ins-especie').value;
-            const lugarVal = document.getElementById('ins-lugar').value || "Estación de control";
+            const lugarVal = document.getElementById('ins-lugar').value || "Punto de Pesca";
             if(!fotoBase64) return;
 
             let localHistory = JSON.parse(localStorage.getItem('fishing_pokedex')) || [];
-            const nuevaCaptura = {
-                id: Date.now(), especie: especieKey, lugar: lugarVal, fecha: new Date().toLocaleDateString('es-ES'), foto: fotoBase64
-            };
-
-            localHistory.push(nuevaCaptura);
+            localHistory.push({ id: Date.now(), especie: especieKey, lugar: lugarVal, fecha: new Date().toLocaleDateString('es-ES'), foto: fotoBase64 });
             localStorage.setItem('fishing_pokedex', JSON.stringify(localHistory));
 
             fotoBase64 = null;
@@ -666,63 +569,51 @@
 
         function renderizarPokedex() {
             const grid = document.getElementById('grid-pokedex');
-            if (!grid) return;
-            grid.innerHTML = "";
-
+            if (!grid) return; grid.innerHTML = "";
             const historial = JSON.parse(localStorage.getItem('fishing_pokedex')) || [];
-            const especiesPescadasUnicas = [...new Set(historial.map(c => c.especie))];
             
-            const contador = document.getElementById('pokedex-contador');
-            if (contador) contador.innerText = `${especiesPescadasUnicas.length} / 9`;
+            document.getElementById('pokedex-contador').innerText = historial.length;
 
             if(historial.length === 0) {
-                grid.innerHTML = `<div class="col-span-full text-center text-slate-600 py-16 text-xs font-mono uppercase tracking-widest">LOGS VACÍOS<br>Consolida fotos desde la orilla.</div>`;
+                grid.innerHTML = `<div class="col-span-full text-center text-slate-600 py-12 text-xs font-mono uppercase tracking-widest">SIN CAPTURAS REGISTRADAS</div>`;
                 return;
             }
 
             historial.slice().reverse().forEach(cap => {
-                const pezInfo = DATA_PESCA[cap.especie] || { nombre: "Desconocido", colorClass: "text-slate-400" };
+                const pezInfo = DATA_PESCA[cap.especie] || { nombre: "Especie", colorClass: "text-slate-400" };
                 const card = document.createElement('div');
                 card.className = "bg-slate-900 border border-slate-800 p-2.5 rounded-2xl flex flex-col justify-between shadow-md relative group";
                 card.innerHTML = `
                     <div class="relative aspect-square w-full bg-slate-950 rounded-xl overflow-hidden mb-2 border border-slate-800">
-                        <img src="${cap.foto}" class="w-full h-full object-cover" loading="lazy" />
+                        <img src="${cap.foto}" class="w-full h-full object-cover" />
                         <span class="absolute bottom-1 right-1 text-[8px] bg-black/80 px-1.5 py-0.5 font-mono text-slate-400 rounded">${cap.fecha}</span>
                     </div>
-                    <div class="px-1 space-y-1">
-                        <div class="flex justify-between items-center gap-1">
-                            <h4 class="text-[11px] font-black text-white uppercase tracking-wide truncate flex-1">${pezInfo.nombre}</h4>
-                            <div class="w-4 h-4 ${pezInfo.colorClass.split(' ').pop()} flex-shrink-0">${CONTORNOS_SVG[cap.especie] || ''}</div>
+                    <div class="px-1 flex justify-between items-center gap-1">
+                        <div>
+                            <h4 class="text-[11px] font-black text-white uppercase tracking-wide truncate">${pezInfo.nombre}</h4>
+                            <p class="text-[9px] text-slate-500 truncate font-mono">📍 ${cap.lugar}</p>
                         </div>
-                        <p class="text-[9px] text-slate-500 truncate font-mono">📍 ${cap.lugar}</p>
+                        <div class="w-6 h-4 text-slate-800">${CONTORNOS_SVG[cap.especie] || ''}</div>
                     </div>
-                    <button onclick="eliminarCaptura(${cap.id})" class="absolute top-4 right-4 bg-red-600/90 hover:bg-red-600 text-white w-5 h-5 flex items-center justify-center rounded-md opacity-0 group-hover:opacity-100 transition-opacity text-xs font-bold shadow-lg">
-                        ✕
-                    </button>
+                    <button onclick="eliminarCaptura(${cap.id})" class="absolute top-4 right-4 bg-red-600/90 text-white w-5 h-5 flex items-center justify-center rounded shadow-lg text-xs font-mono">✕</button>
                 `;
                 grid.appendChild(card);
             });
         }
 
         function eliminarCaptura(id) {
-            if(!confirm("¿Depurar registro de la bitácora?")) return;
+            if(!confirm("¿Eliminar registro de captura?")) return;
             let localHistory = JSON.parse(localStorage.getItem('fishing_pokedex')) || [];
-            localHistory = localHistory.filter(cap => cap.id !== id);
-            localStorage.setItem('fishing_pokedex', JSON.stringify(localHistory));
+            localStorage.setItem('fishing_pokedex', JSON.stringify(localHistory.filter(cap => cap.id !== id)));
             renderizarPokedex();
         }
 
         function repetirFoto() { abrirCamara(); }
-
         function cerrarCamara() {
             document.getElementById('modal-camara').classList.add('hidden');
-            if (streamCamara) { 
-                streamCamara.getTracks().forEach(track => track.stop()); 
-                streamCamara = null;
-            }
+            if (streamCamara) { streamCamara.getTracks().forEach(track => track.stop()); streamCamara = null; }
         }
 
-        // --- CARGA INICIAL ---
         window.addEventListener('DOMContentLoaded', () => {
             initMapa();
             renderizarPokedex();
