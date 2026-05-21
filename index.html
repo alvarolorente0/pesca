@@ -10,8 +10,11 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
-        #map { height: 400px; width: 100%; border-radius: 1rem; z-index: 1; }
+        #map { height: 350px; width: 100%; border-radius: 1rem; z-index: 1; }
         .hidden { display: none !important; }
+        /* Scroll horizontal suave para el selector en móviles */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen font-sans">
@@ -35,6 +38,28 @@
 
         <!-- ================= PANEL 1: ENTORNO MAPA Y TELEMETRÍA ================= -->
         <section id="ventana-mapa" class="space-y-4">
+            
+            <!-- NUEVO: SELECTOR RÁPIDO DE TRAMOS TIPICOS (Scroll horizontal en móvil) -->
+            <div class="bg-slate-900 p-3 rounded-2xl border border-slate-800 space-y-2">
+                <span class="block text-[10px] font-mono text-cyan-400 uppercase tracking-wider px-1">📍 Tramos típicos de Aragón:</span>
+                <div class="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+                    <button onclick="seleccionarTramoPreset('ebro')" class="flex-shrink-0 bg-slate-950 border border-slate-800 hover:border-cyan-500 text-xs px-3 py-2 rounded-xl font-bold transition-all text-white">
+                        🌊 Ebro (Zaragoza)
+                    </button>
+                    <button onclick="seleccionarTramoPreset('mezalocha')" class="flex-shrink-0 bg-slate-950 border border-slate-800 hover:border-cyan-500 text-xs px-3 py-2 rounded-xl font-bold transition-all text-white">
+                        🏔️ P. Mezalocha
+                    </button>
+                    <button onclick="seleccionarTramoPreset('tosos')" class="flex-shrink-0 bg-slate-950 border border-slate-800 hover:border-cyan-500 text-xs px-3 py-2 rounded-xl font-bold transition-all text-white">
+                        🌲 P. Tosos
+                    </button>
+                    <button onclick="seleccionarTramoPreset('caspe')" class="flex-shrink-0 bg-slate-950 border border-slate-800 hover:border-cyan-500 text-xs px-3 py-2 rounded-xl font-bold transition-all text-white">
+                        ☀️ Caspe (Mar de Aragón)
+                    </button>
+                    <button onclick="seleccionarTramoPreset('mequinenza')" class="flex-shrink-0 bg-slate-950 border border-slate-800 hover:border-cyan-500 text-xs px-3 py-2 rounded-xl font-bold transition-all text-white">
+                        🐊 Mequinenza
+                    </button>
+                </div>
+            </div>
             
             <!-- Bloque de geolocalización y telemetría rápida -->
             <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800 grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
@@ -221,51 +246,59 @@
 
     <!-- ================= MOTOR LOGICO SCRIPTING ================= -->
     <script>
+        // --- COORDENADAS PRESET COORD_TRAMOS ---
+        const PRESETS_UBICACION = {
+            ebro: { lat: 41.6575, lng: -0.8762, nombre: "Río Ebro (Zaragoza)", tipo: "Río" },
+            mezalocha: { lat: 41.4285, lng: -0.9152, nombre: "Embalse Mezalocha", tipo: "Pantano" },
+            tosos: { lat: 41.3321, lng: -1.0215, nombre: "Embalse de Tosos", tipo: "Pantano" },
+            caspe: { lat: 41.2952, lng: -0.0412, nombre: "Caspe (Mar de Aragón)", tipo: "Pantano" },
+            mequinenza: { lat: 41.3712, lng: 0.2815, nombre: "Embalse Mequinenza", tipo: "Pantano" }
+        };
+
         // --- BASE DE DATOS MAESTRA ---
         const DATA_PESCA = {
             carpa: {
-                nombre: "Carpa Común", capa: "fondo", colorRig: "#eab308", cientifico: "Cyprinus carpio", colorClass: "border-yellow-500/30 hover:border-yellow-500 bg-yellow-950/10", habitats: ["Zaragoza", "Caspe", "Mequinenza", "Ribarroja", "Mezalocha", "Tosos", "Cosuenda"], cana: "Carpfishing 12ft 3.5lb", carrete: "Baitrunner 10000", linea: "Monofilamento 0.35mm", bajo: "Trenzado con Hair Rig",
-                focoRio: "Remansos profundos tras las islas de grava del Ebro.", focoPantano: "Playas de arcilla y recodos abrigados.", focoBalsa: "Zonas de densa vegetación/hierbas subacuáticas o pegadas a la pared.",
-                configSabores: { grandesMases: { titulo: "Hair Rig con Boilie Salado de Krill", desc: "En el Mar de Aragón el cangrejo es su dieta base.", alt: "Cebado con grano salado." }, pequenosMases: { titulo: "Montajes Dulces (Piña o Fresa)", desc: "En Tosos la carpa reacciona de maravilla al aroma frutal.", alt: "Racimo bañado en Scopex." }, rio: { titulo: "Maíz Fermentado Duro y Chufa", desc: "Para el Ebro granos pesados anti-corriente.", alt: "Remojo en Robin Red." }, balsa: { titulo: "Pop-Ups Altamente Visuales Dulces", desc: "Estrategia para Cosuenda. Cebos flotantes críticos.", alt: "Piña fluo o Scopex." } }
+                nombre: "Carpa Común", capa: "fondo", colorRig: "#eab308", cientifico: "Cyprinus carpio", colorClass: "border-yellow-500/30 hover:border-yellow-500 bg-yellow-950/10", habitats: ["Zaragoza", "Caspe", "Mequinenza", "Mezalocha", "Tosos"], cana: "Carpfishing 12ft 3.5lb", carrete: "Baitrunner 10000", linea: "Monofilamento 0.35mm", bajo: "Trenzado con Hair Rig",
+                focoRio: "Remansos profundos tras las islas de grava del Ebro.", focoPantano: "Playas de arcilla y recodos abrigados.",
+                configSabores: { grandesMases: { titulo: "Hair Rig con Boilie Salado de Krill", desc: "En el Mar de Aragón el cangrejo es su dieta base.", alt: "Cebado con grano salado." }, pequenosMases: { titulo: "Montajes Dulces (Piña o Fresa)", desc: "En Tosos la carpa reacciona de maravilla al aroma frutal.", alt: "Racimo bañado en Scopex." }, rio: { titulo: "Maíz Fermentado Duro y Chufa", desc: "Para el Ebro granos pesados anti-corriente.", alt: "Remojo en Robin Red." } }
             },
             bass: { 
-                nombre: "Black Bass", capa: "medias", colorRig: "#38bdf8", cientifico: "Micropterus salmoides", colorClass: "border-sky-500/30 hover:border-sky-500 bg-sky-950/10", habitats: ["Mezalocha", "Tosos", "Caspe", "Mequinenza", "Ribarroja"], cana: "6'8\" MH Fast Action", carrete: "Casting rápido", linea: "Trenzado 30 lbs", bajo: "Fluorocarbono 0.35mm", 
-                focoRio: "Estructuras muertas.", focoPantano: "Cortados de piedra y árboles sumergidos.", focoBalsa: "Esquinas sombreadas de hormigón.",
-                configSabores: { grandesMases: { titulo: "Cangrejos de Vinilo con Sal", desc: "Sondeando coberturas profundas.", alt: "Swimbait." }, pequenosMases: { titulo: "Criaturas Finesse sin Plomo (Ned / Wacky)", desc: "Caídas muy lentas en aguas claras de Tosos o Mezalocha.", alt: "Poppers de orilla." }, rio: { titulo: "Spinnerbaits de palas anchas", desc: "Vibración sónica pura en aguas revueltas del Ebro.", alt: "Crankbaits." } } 
+                nombre: "Black Bass", capa: "medias", colorRig: "#38bdf8", cientifico: "Micropterus salmoides", colorClass: "border-sky-500/30 hover:border-sky-500 bg-sky-950/10", habitats: ["Mezalocha", "Tosos", "Caspe", "Mequinenza"], cana: "6'8\" MH Fast Action", carrete: "Casting rápido", linea: "Trenzado 30 lbs", bajo: "Fluorocarbono 0.35mm", 
+                focoRio: "Estructuras muertas u obstáculos de orilla.", focoPantano: "Cortados de piedra y árboles sumergidos.",
+                configSabores: { grandesMases: { titulo: "Cangrejos de Vinilo con Sal", desc: "Sondeando coberturas profundas en Caspe/Mequinenza.", alt: "Swimbait." }, pequenosMases: { titulo: "Criaturas Finesse sin Plomo (Ned / Wacky)", desc: "Caídas muy lentas en aguas claras de Tosos o Mezalocha.", alt: "Poppers de orilla." }, rio: { titulo: "Spinnerbaits de palas anchas", desc: "Vibración sónica pura si el agua se enturbia.", alt: "Crankbaits." } } 
             },
             lucioperca: { 
-                nombre: "Lucioperca", capa: "fondo", colorRig: "#10b981", cientifico: "Sander lucioperca", colorClass: "border-emerald-500/30 hover:border-emerald-500 bg-emerald-950/10", habitats: ["Zaragoza", "Mezalocha", "Caspe", "Mequinenza", "Ribarroja"], cana: "7'3\" Extra-Fast", carrete: "Spinning 2500", linea: "Trenzado PE 0.12mm", bajo: "Fluorocarbono 0.26mm", 
-                focoRio: "Piedras profundas.", focoPantano: "Taludes de arcilla limpia de 8 a 15 metros.", focoBalsa: "Fondo oscuro de balsa.",
-                configSabores: { grandesMases: { titulo: "Soft Shads con Esencia", desc: "Rascando badenes rocosos profundos.", alt: "Carolina Rig." }, pequenosMases: { titulo: "Vinilos pequeños con aroma a Calamar", desc: "Movimientos muy sutiles en aguas claras.", alt: "Twitchbaits." }, rio: { titulo: "Shads plomados de colores flúor", desc: "Colores reactivos para batir las aguas tomadas del Ebro.", alt: "Cucharilla." } } 
+                nombre: "Lucioperca", capa: "fondo", colorRig: "#10b981", cientifico: "Sander lucioperca", colorClass: "border-emerald-500/30 hover:border-emerald-500 bg-emerald-950/10", habitats: ["Zaragoza", "Mezalocha", "Caspe", "Mequinenza"], cana: "7'3\" Extra-Fast", carrete: "Spinning 2500", linea: "Trenzado PE 0.12mm", bajo: "Fluorocarbono 0.26mm", 
+                focoRio: "Piedras profundas y pozas del lecho.", focoPantano: "Taludes de arcilla limpia de 8 a 15 metros.",
+                configSabores: { grandesMases: { titulo: "Soft Shads con Esencia", desc: "Rascando badenes rocosos profundos.", alt: "Carolina Rig." }, pequenosMases: { titulo: "Vinilos pequeños con aroma a Calamar", desc: "Movimientos muy sutiles en aguas paradas.", alt: "Twitchbaits." }, rio: { titulo: "Shads plomados de colores flúor", desc: "Colores reactivos para batir las aguas tomadas del Ebro.", alt: "Cucharilla." } } 
             },
             lucio: { 
                 nombre: "Lucio", capa: "medias", colorRig: "#14b8a6", cientifico: "Esox lucius", colorClass: "border-teal-500/30 hover:border-teal-500 bg-teal-950/10", habitats: ["Mezalocha", "Caspe", "Mequinenza"], cana: "7'2\" Heavy", carrete: "Casting robusto", linea: "Trenzado 40 lbs", bajo: "Titanio anti-dientes", 
-                focoRio: "Zonas muertas sin corriente.", focoPantano: "Puntas de islands y algueros.", focoBalsa: "No computado en balsa.",
+                focoRio: "Zonas muertas sin corriente.", focoPantano: "Puntas de islands y algueros someros.",
                 configSabores: { grandesMases: { titulo: "Shads Gigantes de 20cm", desc: "Buscando activar al gran depredador suspendido.", alt: "Grandes ondulantes." }, pequenosMases: { titulo: "Jerkbaits técnicos", desc: "Estímulos reactivos rápidos en Mezalocha.", alt: "Vinilos cola de hoz." }, rio: { titulo: "Swinbaits de hundimiento rápido", desc: "Buscando cortar la corriente cerca de muros.", alt: "Cucharas pesadas." } } 
             },
             alburno: { 
-                nombre: "Alburno", capa: "superficie", colorRig: "#94a3b8", cientifico: "Alburnus alburnus", colorClass: "border-slate-500/30 hover:border-slate-400 bg-slate-950/10", habitats: ["Zaragoza", "Mezalocha", "Caspe", "Mequinenza", "Ribarroja"], cana: "Coup telescópica 3m", carrete: "Línea directa", linea: "Monofilamento 0.12mm", bajo: "Anzuelo n° 22", 
-                focoRio: "Corrientes mansas.", focoPantano: "Nubes masivas en réculas.", focoBalsa: "Centros limpios.",
+                nombre: "Alburno", capa: "superficie", colorRig: "#94a3b8", cientifico: "Alburnus alburnus", colorClass: "border-slate-500/30 hover:border-slate-400 bg-slate-950/10", habitats: ["Zaragoza", "Mezalocha", "Caspe", "Mequinenza"], cana: "Coup telescópica 3m", carrete: "Línea directa", linea: "Monofilamento 0.12mm", bajo: "Anzuelo n° 22", 
+                focoRio: "Corrientes mansas y contracorrientes de orilla.", focoPantano: "Nubes masivas en réculas resguardadas.",
                 configSabores: { grandesMases: { titulo: "Asticot vivo", desc: "Manteniendo el cardumen activo bajo el flotador.", alt: "Masilla neutra." }, pequenosMases: { titulo: "Asticot con Vainilla Dulce", desc: "Acelera su frenesí devorador en aguas paradas.", alt: "Masilla dulce." }, rio: { titulo: "Enguado ligero de superficie", desc: "Nube de cebado flotante a favor de corriente.", alt: "Caster." } } 
             },
             percasol: { 
-                nombre: "Percasol", capa: "superficie", colorRig: "#a855f7", cientifico: "Lepomis gibbosus", colorClass: "border-purple-500/30 hover:border-purple-500 bg-purple-950/10", habitats: ["Mezalocha", "Tosos", "Caspe", "Mequinenza", "Ribarroja"], cana: "Rockfishing", carrete: "Tamaño 1000", linea: "Monofilamento 0.16mm", bajo: "Anzuelo n° 16", 
-                focoRio: "Márgenes sin flujo.", focoPantano: "Paredes rocosas y rampas.", focoBalsa: "Paredes de hormigón orilladas.",
+                nombre: "Percasol", capa: "superficie", colorRig: "#a855f7", cientifico: "Lepomis gibbosus", colorClass: "border-purple-500/30 hover:border-purple-500 bg-purple-950/10", habitats: ["Mezalocha", "Tosos", "Caspe", "Mequinenza"], cana: "Rockfishing", carrete: "Tamaño 1000", linea: "Monofilamento 0.16mm", bajo: "Anzuelo n° 16", 
+                focoRio: "Márgenes sin flujo.", focoPantano: "Paredes rocosas y rampas de piedra suelta.",
                 configSabores: { grandesMases: { titulo: "Lombriz troceada", desc: "Rascando los bloques orillados.", alt: "Microvinilos." }, pequenosMases: { titulo: "Microvinilos dulces", desc: "Patrullando la orilla inmediata.", alt: "Microcucharilla." }, rio: { titulo: "Lombriz natural", desc: "Pegado a las raíces.", alt: "No computado." } } 
             },
             barbo: { 
                 nombre: "Barbo Ebro", capa: "fondo", colorRig: "#b45309", cientifico: "Barbus graellsii", colorClass: "border-amber-700/40 hover:border-amber-600 bg-amber-950/20", habitats: ["Zaragoza", "Tosos", "Caspe", "Mequinenza"], cana: "Feeder / Heavy Feeder 3.60m", carrete: "Tamaño 4000 freno micrométrico", linea: "Monofilamento 0.22mm", bajo: "Fluorocarbono 0.18mm", 
-                focoRio: "Cunas de grava limpia con corriente moderada-fuerte.", focoPantano: "Recodos profundos de entrada de agua limpia en Tosos.", focoBalsa: "Estructura basal.",
+                focoRio: "Cunas de grava limpia con corriente moderada-fuerte.", focoPantano: "Recodos profundos de entrada de agua limpia en Tosos.",
                 configSabores: { grandesMases: { titulo: "Pellets de Queso / Halibut", desc: "En embalses grandes buscan perfiles cárnicos.", alt: "Maíz dulce." }, pequenosMases: { titulo: "Montaje Feeder con Queso Fuerte", desc: "Estrategia precisa en Tosos. Responde al queso curado.", alt: "Lombriz roja." }, rio: { titulo: "Huella de Sangre / Cangrejo triturado", desc: "En el Ebro busca cebo pesado rascando piedras.", alt: "Asticot." } } 
             },
             trucha: { 
                 nombre: "Trucha Arcoíris", capa: "medias", colorRig: "#ec4899", cientifico: "Oncorhynchus mykiss", colorClass: "border-pink-500/30 hover:border-pink-500 bg-pink-950/10", habitats: ["Tosos"], cana: "Ultra Light 1.80m", carrete: "Tamaño 1000 rápido", linea: "Monofilamento 0.16mm", bajo: "Fluorocarbono 0.14mm", 
-                focoRio: "No aplica flujo libre constante.", focoPantano: "Zonas cercanas a la presa y entrada de agua fresca.", focoBalsa: "Zonas de oxigenación.",
+                focoRio: "Zonas de corriente rota.", focoPantano: "Zonas cercanas a la presa y entrada de agua fresca de montaña.",
                 configSabores: { pequenosMases: { titulo: "Cucharillas Giratorias o PowerBait", desc: "Específico de Tosos. Capas medias buscando eclosiones.", alt: "Minnows de 3-5cm." } } 
             }
         };
 
-        // Iconos de contornos minimalistas simulación sonar
         const CONTORNOS_SVG = {
             carpa: "🐟", bass: "🐠", lucioperca: "🐡", lucio: "🦈", alburno: "🪱", percasol: "👾", barbo: "🔱", trucha: "🧬"
         };
@@ -273,32 +306,41 @@
         let mapa, marcador, entornoDetectado = "Río", ubicacionNombre = "Río Ebro (Zaragoza)", presionActual = 1013;
         let streamCamara = null, fotoBase64 = null;
 
-        // --- SISTEMA 1: ENTRADA Y MAPA ---
+        // --- SISTEMA INTERACTIVO DE MAPA ---
         function initMapa() {
-            mapa = L.map('map').setView([41.4500, -0.9000], 9);
+            mapa = L.map('map').setView([41.6575, -0.8762], 11);
             L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; CARTO' }).addTo(mapa);
             marcador = L.marker([41.6575, -0.8762]).addTo(mapa);
             setTimeout(() => { mapa.invalidateSize(); }, 300);
 
+            // Click manual libre en cualquier otra coordenada del mapa
             mapa.on('click', function(e) {
                 const lat = e.latlng.lat; const lng = e.latlng.lng;
-                let nombrePunto = "Tramo Fluvial Libre"; let tipo = "Río";
+                let nombrePunto = "Tramo Libre Fluvial"; let tipo = "Río";
 
                 if (lat > 41.25 && lat < 41.35 && lng > -0.15 && lng < 0.05) { nombrePunto = "Caspe (Mar de Aragón)"; tipo = "Pantano"; }
                 else if (lat > 41.33 && lat < 41.42 && lng >= 0.05 && lng < 0.35) { nombrePunto = "Embalse Mequinenza"; tipo = "Pantano"; }
-                else if (lat > 41.15 && lat < 41.30 && lng >= 0.35) { nombrePunto = "Embalse de Ribarroja"; tipo = "Pantano"; }
                 else if (lat > 41.40 && lat < 41.46 && lng > -1.00 && lng < -0.85) { nombrePunto = "Embalse Mezalocha"; tipo = "Pantano"; }
                 else if (lat > 41.30 && lat < 41.36 && lng > -1.10 && lng < -0.98) { nombrePunto = "Embalse de Tosos"; tipo = "Pantano"; }
                 else if (lat > 41.60 && lat < 41.70 && lng > -0.95 && lng < -0.75) { nombrePunto = "Río Ebro (Zaragoza)"; tipo = "Río"; }
-                else if (lat > 41.32 && lat < 41.38 && lng > -1.35 && lng < -1.22) { nombrePunto = "Balsa de Cosuenda"; tipo = "Balsa"; }
                 
                 cargarPuntoCalibrado(lat, lng, nombrePunto, tipo);
             });
         }
 
+        // FUNCIÓN DISPARADA DESDE EL SELECTOR SUPERIOR RAPIDO
+        function seleccionarTramoPreset(key) {
+            const data = PRESETS_UBICACION[key];
+            if (data) {
+                cargarPuntoCalibrado(data.lat, data.lng, data.nombre, data.tipo);
+                if(mapa) {
+                    mapa.setView([data.lat, data.lng], 12); // Ajusta el zoom idóneo al saltar
+                }
+            }
+        }
+
         function cargarPuntoCalibrado(lat, lng, nombre, tipoAgua) {
             if(marcador) marcador.setLatLng([lat, lng]);
-            if(mapa) mapa.panTo([lat, lng]);
             
             entornoDetectado = tipoAgua;
             ubicacionNombre = nombre;
@@ -311,16 +353,13 @@
                 badge.innerText = "🌊 FLUVIAL / RÍO";
                 badge.className = "text-xs font-black text-sky-400 tracking-wide block text-center";
                 document.getElementById('txt-turbidez').innerText = "Turbio (0.7m)";
-            } else if (tipoAgua === "Balsa") {
-                badge.innerText = "🧱 BALSA TÉCNICA";
-                badge.className = "text-xs font-black text-orange-400 tracking-wide block text-center";
-                document.getElementById('txt-turbidez').innerText = "Limpia/Fondo (1.9m)";
             } else {
                 badge.innerText = "🏔️ EMBALSE / LAGO";
                 badge.className = "text-xs font-black text-teal-400 tracking-wide block text-center";
                 document.getElementById('txt-turbidez').innerText = "Claro (2.3m)";
             }
 
+            // Simulación matemática de telemetría de campo según coordenadas
             const calculo = Math.abs(Math.sin(lat) * Math.cos(lng));
             presionActual = Math.floor(1009 + (calculo * 14));
             let temp = Math.floor(15 + (calculo * 9));
@@ -344,10 +383,8 @@
             let idFiltro = "Zaragoza";
             if (ubicacionNombre.includes("Caspe")) idFiltro = "Caspe";
             if (ubicacionNombre.includes("Mequinenza")) idFiltro = "Mequinenza";
-            if (ubicacionNombre.includes("Ribarroja")) idFiltro = "Ribarroja";
             if (ubicacionNombre.includes("Mezalocha")) idFiltro = "Mezalocha";
             if (ubicacionNombre.includes("Tosos")) idFiltro = "Tosos";
-            if (ubicacionNombre.includes("Cosuenda")) idFiltro = "Cosuenda";
 
             for (const key in DATA_PESCA) {
                 const pez = DATA_PESCA[key];
@@ -377,28 +414,23 @@
 
             if (entornoDetectado === "Río") {
                 document.getElementById('rep-zona-foco').innerText = `Foco dinámico: En ${ubicacionNombre}, se detectan en: ${pez.focoRio}`;
-            } else if (entornoDetectado === "Balsa") {
-                document.getElementById('rep-zona-foco').innerText = `Foco dinámico: En ${ubicacionNombre}, foco absoluto en: ${pez.focoBalsa}`;
             } else {
                 document.getElementById('rep-zona-foco').innerText = `Foco dinámico: En ${ubicacionNombre}, se detectan en: ${pez.focoPantano}`;
             }
 
-            // --- DETERMINACIÓN DE SABORES ROBUSTA (FALLBACK INTEGRADO) ---
+            // --- DETERMINACIÓN DE SABORES/CEBOS SEGÚN ENTORNO ACTIVO ---
             let ceboConfig = null;
             if (entornoDetectado === "Río" && pez.configSabores.rio) {
                 ceboConfig = pez.configSabores.rio;
-            } else if (entornoDetectado === "Balsa" && pez.configSabores.balsa) {
-                ceboConfig = pez.configSabores.balsa;
             } else if ((idFiltro === "Tosos" || idFiltro === "Mezalocha") && pez.configSabores.pequenosMases) {
                 ceboConfig = pez.configSabores.pequenosMases;
             } else {
                 ceboConfig = pez.configSabores.grandesMases || pez.configSabores.pequenosMases;
             }
 
-            // Rescate definitivo si la clave no existía (ej: Trucha en zonas genéricas)
             if (!ceboConfig) {
                 const llavesVisibles = Object.keys(pez.configSabores);
-                ceboConfig = llavesVisibles.length > 0 ? pez.configSabores[llavesVisibles[0]] : { titulo: "Lure Estándar", desc: "Ajustar al lecho del río.", alt: "Lombriz natural" };
+                ceboConfig = llavesVisibles.length > 0 ? pez.configSabores[llavesVisibles[0]] : { titulo: "Lure Estándar", desc: "Ajustar al fondo.", alt: "Lombriz natural" };
             }
 
             document.getElementById('rep-lure-nombre').innerText = ceboConfig.titulo;
@@ -410,7 +442,7 @@
             document.getElementById('rep-tech-linea').innerText = pez.linea;
             document.getElementById('rep-tech-bajo').innerText = pez.bajo;
 
-            // --- RADAR DE AGUA ---
+            // --- RADAR DE AGUA (SONAR) ---
             ["superficie", "medias", "fondo"].forEach(c => {
                 document.getElementById(`capa-${c}`).className = "p-2 border border-slate-800/40 rounded flex justify-between items-center transition-all bg-slate-900/40 text-slate-400";
             });
@@ -426,7 +458,7 @@
             document.getElementById(destinoIcono).innerText = CONTORNOS_SVG[key];
             document.getElementById('sonar-capa-activa').innerText = `ECOS FIJADOS EN: ${nombreCapaVisual}`;
 
-            // --- DIBUJO DE APAREJO SVG DINÁMICO ---
+            // --- APAREJO DINÁMICO SVG ---
             const targetColor = pez.colorRig || "#38bdf8";
             document.getElementById('rig-hilo-madre').setAttribute('stroke', targetColor);
             document.getElementById('rig-lure').setAttribute('stroke', targetColor);
@@ -449,7 +481,7 @@
         }
 
 
-        // --- SISTEMA 2: CAMBIO DE VENTANA (MAPA vs POKÉDEX) ---
+        // --- NAVEGACIÓN ENTRE SECCIONES ---
         function mostrarVentana(target) {
             const vMapa = document.getElementById('ventana-mapa');
             const vPokedex = document.getElementById('ventana-pokedex');
@@ -472,7 +504,7 @@
         }
 
 
-        // --- SISTEMA 3: CONTROL HARDWARE CÁMARA & REGISTRO POKÉDEX ---
+        // --- HARDWARE CÁMARA Y ARCHIVOS POKÉDEX ---
         async function abrirCamara() {
             const modal = document.getElementById('modal-camara');
             const video = document.getElementById('video-camara');
@@ -484,22 +516,19 @@
             document.getElementById('controles-disparo').classList.remove('hidden');
             document.getElementById('formulario-captura').classList.add('hidden');
 
-            // Cargar automáticamente el nombre del tramo activo en el mapa en el formulario
             if (typeof ubicacionNombre !== 'undefined') {
                 document.getElementById('ins-lugar').value = ubicacionNombre;
             }
 
             try {
-                // Abrir la cámara trasera del smartphone de forma nativa
                 streamCamara = await navigator.mediaDevices.getUserMedia({
                     video: { facingMode: { exact: "environment" } }, audio: false
                 });
             } catch (err) {
-                // Fallback de seguridad para ordenadores o cámaras generales
                 try {
                     streamCamara = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
                 } catch(e) {
-                    alert("No se ha detectado ninguna cámara conectada en tu dispositivo.");
+                    alert("Cámara no detectada.");
                     cerrarCamara();
                 }
             }
@@ -515,7 +544,6 @@
             canvas.height = video.videoHeight;
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
             
-            // Transformación comprimida de imagen a Base64 para almacenar texto
             fotoBase64 = canvas.toDataURL('image/jpeg', 0.6);
 
             video.classList.add('hidden');
@@ -523,19 +551,18 @@
             document.getElementById('controles-disparo').classList.add('hidden');
             document.getElementById('formulario-captura').classList.remove('hidden');
 
-            // Apagar stream para liberar la cámara
             if (streamCamara) {
                 streamCamara.getTracks().forEach(track => track.stop());
             }
 
-            // --- INTELIGENCIA CONTEXTUAL (Algoritmo predictivo de especie) ---
+            // Selector inteligente de pez por defecto según tramo de la foto
             if (ubicacionNombre.includes("Tosos")) {
                 document.getElementById('ins-especie').value = "trucha";
-            } else if (ubicacionNombre.includes("Cosuenda")) {
-                document.getElementById('ins-especie').value = "carpa";
+            } else if (ubicacionNombre.includes("Mezalocha")) {
+                document.getElementById('ins-especie').value = "lucio";
             } else if (ubicacionNombre.includes("Mequinenza") || ubicacionNombre.includes("Caspe")) {
                 document.getElementById('ins-especie').value = "bass";
-            } else if (ubicacionNombre.includes("Zaragoza")) {
+            } else {
                 document.getElementById('ins-especie').value = "barbo";
             }
         }
@@ -543,17 +570,11 @@
         function guardarCaptura() {
             const especieKey = document.getElementById('ins-especie').value;
             const lugarVal = document.getElementById('ins-lugar').value || "Ubicación libre";
-            
             if(!fotoBase64) return;
 
             let localHistory = JSON.parse(localStorage.getItem('fishing_pokedex')) || [];
-
             const nuevaCaptura = {
-                id: Date.now(),
-                especie: especieKey,
-                lugar: lugarVal,
-                fecha: new Date().toLocaleDateString('es-ES'),
-                foto: fotoBase64
+                id: Date.now(), especie: especieKey, lugar: lugarVal, fecha: new Date().toLocaleDateString('es-ES'), foto: fotoBase64
             };
 
             localHistory.push(nuevaCaptura);
@@ -569,20 +590,16 @@
             grid.innerHTML = "";
 
             const historial = JSON.parse(localStorage.getItem('fishing_pokedex')) || [];
-            
-            // Calcular cromo-medallas únicas estilo Pokémon Go
             const especiesPescadasUnicas = [...new Set(historial.map(c => c.especie))];
             document.getElementById('pokedex-contador').innerText = `${especiesPescadasUnicas.length} / 8`;
 
             if(historial.length === 0) {
-                grid.innerHTML = `<div class="col-span-full text-center text-slate-500 py-16 text-xs font-mono">TU POKÉDEX ESTÁ VACÍA.<br>Sal al río, captura un ejemplar y pulsa registrar.</div>`;
+                grid.innerHTML = `<div class="col-span-full text-center text-slate-500 py-16 text-xs font-mono">POKÉDEX VACÍA.<br>Registra una captura con tu cámara en las orillas.</div>`;
                 return;
             }
 
-            // Renderizar de nuevas a viejas (orden invertido)
             historial.slice().reverse().forEach(cap => {
                 const pezInfo = DATA_PESCA[cap.especie] || { nombre: "Desconocido" };
-                
                 const card = document.createElement('div');
                 card.className = "bg-slate-900 border border-slate-800 p-2.5 rounded-2xl flex flex-col justify-between shadow-md";
                 card.innerHTML = `
@@ -611,7 +628,8 @@
         // --- DISPARO INICIAL ---
         window.addEventListener('DOMContentLoaded', () => {
             initMapa();
-            setTimeout(() => { cargarPuntoCalibrado(41.6575, -0.8762, "Río Ebro (Zaragoza)", "Río"); }, 150);
+            // Carga predeterminada al encender la app: Ebro en Zaragoza
+            setTimeout(() => { seleccionarTramoPreset('ebro'); }, 150);
         });
     </script>
 </body>
